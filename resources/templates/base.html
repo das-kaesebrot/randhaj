@@ -21,6 +21,7 @@
     {% endblock %}
     {% include "custom/head.html" ignore missing %}
 </head>
+{% block body %}
 <body>
     <div class="container-fluid text-center">
         {% block content %}{% endblock %}
@@ -32,4 +33,5 @@
         {% include "custom/footer.html" ignore missing %}
     </footer>
 </body>
+{% endblock %}
 </html>
