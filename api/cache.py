@@ -10,7 +10,7 @@ from typing import Dict, Union
 from .constants import Constants
 from .decorators import wait_lock
 from .classes import ImageMetadata
-from .utils import FilenameUtils, ImageUtils, Utils, ThreadingUtils
+from .utils import FilenameUtils, ImageUtils, GeneralUtils, ThreadingUtils
 
 from datetime import timedelta
 from time import perf_counter
@@ -141,7 +141,7 @@ class Cache:
         metadata = self._ids_to_metadata.get(id)
         self._mutex_lock.release()
 
-        width, height = Utils.clamp(width, 0, metadata.original_width), Utils.clamp(
+        width, height = GeneralUtils.clamp(width, 0, metadata.original_width), GeneralUtils.clamp(
             height, 0, metadata.original_height
         )
         

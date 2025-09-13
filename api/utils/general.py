@@ -1,4 +1,5 @@
-class Utils:
+# Hello there
+class GeneralUtils:
     def __init__(self):
         pass
 
