@@ -4,34 +4,31 @@
     <script src="{{ url_for('static', path='/bootstrap/1756173047/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', path='/bootstrap/1756173047/bootstrap.min.css') }}">
     <link rel="shortcut icon" href="{{ url_for('get_favicon') }}">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{{ site_title }}{%- if is_direct_request %} | {{ image_id }}{% endif %}{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {% endblock %}
+    {% endblock head %}
     {% block opengraph_head %}
-    <meta property="og:url" content="{% block opengraph_url %}{{ request.url }}{% endblock %}">
+    <meta property="og:url" content="{% block opengraph_url %}{{ request.url }}{% endblock opengraph_url %}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{% block opengraph_title %}{% endblock %}">
-    <meta property="og:site_name" content="{% block opengraph_site_name %}{% endblock %}">
-    <meta property="og:image" content="{% block opengraph_image_url %}{% endblock %}">
+    <meta property="og:title" content="{%- block opengraph_title %}{%- if is_direct_request -%}{{ image_id }}{% else %}A random image{%- endif -%}{% endblock opengraph_title -%}">
+    <meta property="og:site_name" content="{% block opengraph_site_name %}{{ site_emoji }} {{ site_title }}{%- endblock opengraph_site_name -%}">
+    <meta property="og:image" content="
+{%- block opengraph_image_url %}
+{%- if is_direct_request -%}
+{{ url_for('api_get_image', image_id=image_id).include_query_params(thumb=True) }}
+{% else %}
+{{ url_for('api_get_image', image_id=default_card_image_id).include_query_params(thumb=True) }}
+{%- endif -%}
+{% endblock opengraph_image_url -%}">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ self.opengraph_url() }}">
     <meta name="twitter:title" content="{{ self.opengraph_title() }}">
     <meta name="twitter:image" content="{{ self.opengraph_image_url() }}">
-    {% endblock %}
+    {% endblock opengraph_head %}
     {% include "custom/head.html" ignore missing %}
 </head>
-{% block body %}
 <body>
-    <div class="container-fluid text-center">
-        {% block content %}{% endblock %}
-    </div>
-    <footer class="pt-2 mt-2 text-center text-body-secondary fw-light">
-        {% block footer %}
-        <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" class="text-reset">randhaj</a> version <code>{{ version }}</code></p>
-        {% endblock %}
-        {% include "custom/footer.html" ignore missing %}
-    </footer>
+    {% block body %}{% endblock body %}
 </body>
-{% endblock %}
 </html>

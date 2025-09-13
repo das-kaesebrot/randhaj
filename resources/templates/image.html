@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-
-{% block title %}{{ site_title }}{%- if is_direct_request %} | {{ image_id }}{% endif %}{% endblock %}
+{% extends "content-base.html" %}
 
 {% block head %}
     {{ super() }}
@@ -30,28 +28,22 @@
             background-position: center center;
             background-attachment: fixed;
         }
+
+        /* such a hack */
+
+        .btn, .dropdown-toggle {
+            color: rgb(33, 37, 41);
+            border-color: white;
+            background-image: linear-gradient(45deg,rgba(91, 206, 250, 1) 0%, rgba(245, 169, 184, 1) 100%);
+
+            &:hover {
+                color: rgb(33, 37, 41);
+                background-image: linear-gradient(45deg,rgba(91, 206, 250, 1) 0%, rgba(245, 169, 184, 1) 50%);
+                border-color: rgb(33, 37, 41);
+            }
+        }
     </style>
-{% endblock %}
-
-{%- block opengraph_title -%}
-{%- if is_direct_request -%}
-{{ image_id }}
-{% else %}
-A random image
-{%- endif -%}
-{%- endblock -%}
-
-{%- block opengraph_site_name -%}
-{{ site_emoji }} {{ site_title }}
-{%- endblock -%}
-
-{% block opengraph_image_url %}
-{%- if is_direct_request -%}
-{{ url_for('api_get_image', image_id=image_id).include_query_params(thumb=True) }}
-{% else %}
-{{ url_for('api_get_image', image_id=default_card_image_id).include_query_params(thumb=True) }}
-{%- endif -%}
-{% endblock %}
+{% endblock head %}
 
 {% block content %}
         <h1 class="pt-3 mt-4">{{ site_emoji }} {{ site_title }}</h1>
@@ -63,7 +55,7 @@ A random image
             </div>
             <div class="mt-3 row justify-content-md-center">
                 <div class="col-md-auto mt-1 dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         {%- include 'svg/bi-download.svg' %} Download
                     </button>
                     <ul class="dropdown-menu">
@@ -78,18 +70,18 @@ A random image
                     </ul>
                 </div>
                 <div class="col-md-auto mt-1">
-                    <a role="button" class="btn btn-secondary"
+                    <a role="button" class="btn"
                         href="{{ url_for('page_get_image', image_id=image_id) }}">
                         {%- include 'svg/bi-link-45deg.svg' %} Permalink
                     </a>
                 </div>
                 <div class="col-md-auto mt-1">
-                    <a id="clipboard-link" role="button" class="btn btn-secondary">
+                    <a id="clipboard-link" role="button" class="btn">
                         {%- include 'svg/bi-link-45deg.svg' %} Copy permalink
                     </a>
                 </div>
                 <div class="col-md-auto mt-1">
-                    <a href="{{ url_for('page_redirect_rand_image') }}" role="button" class="btn btn-primary">
+                    <a href="{{ url_for('page_redirect_rand_image') }}" role="button" class="btn">
                         {%- include 'svg/bi-dice-3.svg' %} Random
                     </a>
                 </div>
@@ -115,4 +107,4 @@ A random image
                 });
             });
         </script>
-{% endblock %}
+{% endblock content %}
