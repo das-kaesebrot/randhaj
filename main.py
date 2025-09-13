@@ -9,7 +9,7 @@ from kaesebrot_commons.logging.utils import LoggingUtils
 
 from api.cache import Cache
 from api.classes import FaviconResponse, ResolutionVariant, TemplateResolutionMetadata
-from api.image_utils import ImageUtils
+from api.utils import ImageUtils
 from api.constants import Constants
 
 ENV_PREFIX = "RANDHAJ"
