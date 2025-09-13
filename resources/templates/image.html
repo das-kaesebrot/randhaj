@@ -15,6 +15,21 @@
                 max-height: 50vh;
             }
         }
+
+        body {
+            background-image:
+            linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+                linear-gradient(45deg,rgba(91, 206, 250, 0.2) 0%, rgba(245, 169, 184, 0.8) 100%),
+                linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
+                url({{ url_for('api_get_image', image_id=image_id).include_query_params(width=resolution_data.current_width) }});
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+        }
     </style>
 {% endblock %}
 
