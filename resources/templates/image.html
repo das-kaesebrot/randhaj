@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ site_title }} | {{ image_id }}{% endblock %}
+{% block title %}{{ site_title }}{%- if is_direct_request %} | {{ image_id }}{% endif %}{% endblock %}
 
 {% block head %}
     {{ super() }}
