@@ -31,7 +31,7 @@ A random image
         <div class="align-items-center">
             <div class="mt-2">
                 <a href="{{ url_for('api_get_image', image_id=image_id) }}">
-                    <img id="image" class="rounded img-fluid" alt="Image {{ image_id }}" />
+                    <img id="image" class="rounded img-fluid" src="{{ url_for('api_get_image', image_id=image_id).include_query_params(width=resolution_data.current_width) }}" alt="Image {{ image_id }}" />
                 </a>
             </div>
             <div class="mt-3 row justify-content-md-center">
@@ -41,20 +41,12 @@ A random image
                     </button>
                     <ul class="dropdown-menu">
                         {% for variant in resolution_data.variant_ladder -%}
-                        {% if variant.width == resolution_data.current_width -%}
-                        <li>
-                            <a id="download" class="dropdown-item" download="{{ variant.filename }}">
-                                {%- include 'svg/bi-download.svg' %} {{ variant.width }}x{{ variant.height }} (Cached)
-                            </a>
-                        </li>
-                        {% else %}
                         <li>
                             <a class="dropdown-item" 
                                 href="{{ url_for('api_get_image', image_id=image_id).include_query_params(width=variant.width) }}" download="{{ variant.filename }}">
-                                {%- include 'svg/bi-download.svg' %} {{ variant.width }}x{{ variant.height }}
+                                {%- include 'svg/bi-download.svg' %} {{ variant.width }}x{{ variant.height }} {% if variant.current -%}(Cached){% endif -%}
                             </a>
                         </li>
-                        {% endif %}
                         {% endfor %}
                     </ul>
                 </div>
@@ -95,19 +87,5 @@ A random image
                     }
                 });
             });
-
-            const imageUrl = "{{ url_for('api_get_image', image_id=image_id).include_query_params(width=resolution_data.current_width) }}";
-
-            fetch(imageUrl)
-                .then(res => res.blob())
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-
-                    document.getElementById("image").src = blobUrl;
-
-                    const downloadLink = document.getElementById("download");
-                    downloadLink.href = blobUrl;
-                })
-                .catch(err => console.error("Error loading image:", err));
         </script>
 {% endblock %}
