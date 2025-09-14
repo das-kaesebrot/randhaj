@@ -12,7 +12,7 @@ inotify = "~=0.2.12"
 crawler-user-agents = "*"
 
 [dev-packages]
-flake8 = "~=7.1.2"
+flake8 = "~=7.3.0"
 pytest = "~=8.4.2"
 
 [requires]
