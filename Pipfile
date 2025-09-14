@@ -13,7 +13,7 @@ crawler-user-agents = "*"
 
 [dev-packages]
 flake8 = "~=7.1.2"
-pytest = "~=8.2.2"
+pytest = "~=8.4.2"
 
 [requires]
 python_version = "3.12"
