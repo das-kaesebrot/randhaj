@@ -150,7 +150,12 @@ class ImageUtils:
     ) -> str:
         source = Image.open(source_filename)
         return ImageUtils.write_scaled_copy_to_filesystem(
-            id=id, source=source, output_path=output_path, width=width, height=height, crop=crop
+            id=id,
+            source=source,
+            output_path=output_path,
+            width=width,
+            height=height,
+            crop=crop,
         )
 
     @staticmethod
@@ -166,11 +171,14 @@ class ImageUtils:
         image = source
         if crop:
             image = ImageUtils._crop_center(source, min(source.size), min(source.size))
-        
+
         image = ImageUtils.resize(image, width, height, copy=False)
         image.format = source.format
         filename = os.path.join(
-            output_path, FilenameUtils.get_filename(id=id, width=width, height=height, format=image.format)
+            output_path,
+            FilenameUtils.get_filename(
+                id=id, width=width, height=height, format=image.format
+            ),
         )
         image.save(filename)
         return filename
