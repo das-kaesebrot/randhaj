@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import Union
+import crawleruseragents
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -9,7 +10,7 @@ from kaesebrot_commons.logging.utils import LoggingUtils
 
 from api.cache import Cache
 from api.classes import FaviconResponse, ResolutionVariant, TemplateResolutionMetadata
-from api.image_utils import ImageUtils
+from api.utils import ImageUtils
 from api.constants import Constants
 
 ENV_PREFIX = "RANDHAJ"
@@ -80,6 +81,20 @@ def get_file_response(*, image_id: str, width: Union[int, None] = None, height: 
 def get_image_page_response(request: Request, image_id: str, is_direct_request: bool = False) -> HTMLResponse:
     if not cache.id_exists(image_id):
         raise HTTPException(status_code=404, detail=f"Image with id='{image_id}' could not be found!")
+    
+    if crawleruseragents.is_crawler(user_agent=request.headers.get("user-agent")):
+        return templates.TemplateResponse(
+            request=request,
+            name="base.html",
+            context=
+            {
+                "site_emoji": site_emoji,
+                "site_title": site_title,
+                "image_id": image_id,
+                "is_direct_request": is_direct_request,
+                "default_card_image_id": default_card_image_id,
+            },
+        )
     
     current_width = Constants.get_default_width()
     metadata = cache.get_metadata(image_id)

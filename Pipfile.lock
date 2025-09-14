@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "aaa41aea082db6ae0047f3039621cb4286622b6c8517b0841a6bc1ccca1e6956"
+            "sha256": "ceccab5c9c7ef5c36c6e3ad69a5abea90f66d428b9e9d75bc2591f96bb5c4657"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -55,6 +55,13 @@
             ],
             "markers": "python_version >= '3.10'",
             "version": "==8.2.1"
+        },
+        "crawler-user-agents": {
+            "hashes": [
+                "sha256:16572f5f91775dbf3239d1c84d418575a8a171cf71d9d8be6f6e1e2a0d0eca5c"
+            ],
+            "index": "pypi",
+            "version": "==1.21.0"
         },
         "dnspython": {
             "hashes": [
@@ -413,11 +420,11 @@
                 "email"
             ],
             "hashes": [
-                "sha256:d989c3c6cb79469287b1569f7447a17848c998458d49ebe294e975b9baf0f0db",
-                "sha256:dde5df002701f6de26248661f6835bbe296a47bf73990135c7d07ce741b9623b"
+                "sha256:6b8ffda597a14812a7975c90b82a8a2e777d9257aba3453f973acd3c032a18e2",
+                "sha256:c42dd626f5cfc1c6950ce6205ea58c93efa406da65f479dcb4029d5934857da2"
             ],
             "markers": "python_version >= '3.9'",
-            "version": "==2.11.7"
+            "version": "==2.11.9"
         },
         "pydantic-core": {
             "hashes": [

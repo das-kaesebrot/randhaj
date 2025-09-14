@@ -6,9 +6,9 @@ import os
 from typing import Callable, Union
 from PIL import Image, ImageOps
 
-from .classes import ImageMetadata
-from .filename_utils import FilenameUtils
-from .constants import Constants
+from ..classes import ImageMetadata
+from .filename import FilenameUtils
+from ..constants import Constants
 
 MAX_SIZE = Constants.get_max_width()
 FORMAT = Constants.DEFAULT_FORMAT

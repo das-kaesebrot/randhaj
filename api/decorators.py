@@ -1,6 +1,6 @@
 from functools import wraps
 from threading import Lock
-from .threading_utils import ThreadingUtils
+from .utils import ThreadingUtils
 
 def wait_lock(lock: Lock):
     def _wait_lock_inner(func):

@@ -3,7 +3,7 @@ from typing import Union
 from fastapi.responses import Response
 from PIL import Image
 
-from .filename_utils import FilenameUtils
+from .utils import FilenameUtils
 
 
 @dataclass
