@@ -9,6 +9,7 @@ pillow = "~=11.3.0"
 jinja2 = "~=3.1.6"
 kaesebrot_commons = {git = "https://github.com/das-kaesebrot/python-commons.git", ref = "v0.0.3"}
 inotify = "~=0.2.12"
+crawler-user-agents = "*"
 
 [dev-packages]
 flake8 = "~=7.1.2"

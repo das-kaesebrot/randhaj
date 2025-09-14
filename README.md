@@ -12,7 +12,7 @@ A web service that displays a random image, made primarily to show random pictur
 - [x] privacy-focused: all EXIF tags are stripped from hosted images
 - [x] [Open Graph protocol](https://ogp.me/) integration for link previews
 - [x] [inotify](https://linux.die.net/man/7/inotify)-based watchfolder support: images are automatically added/removed when copied/deleted to/from the input folder
-- [ ] optimized slim page responses for crawlers (return just Open Graph tags and the html header)
+- [x] optimized slim page responses for crawlers (return just Open Graph tags and the html header)
 - [ ] gallery page
 - [ ] pageable image API
 - [ ] responsive page UI with focus on mobile usage
