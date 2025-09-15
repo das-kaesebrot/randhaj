@@ -18,27 +18,25 @@ class ImageUtils:
     def __init__(self):
         pass
 
-    @staticmethod
+    @classmethod
     def resize(
+        cls,
         image: Image.Image,
         width: Union[int, None] = None,
         height: Union[int, None] = None,
-        copy: bool = True,
+        keep_aspect_ratio: bool = True,
     ) -> Image.Image:
         if not width and not height:
             return image  # nothing to do
-
-        if not width and height:
+        
+        if keep_aspect_ratio:
+            width, height = cls.calculate_scaled_size(image.width, image.height, width=width)
+        elif not width and height:
             width = height
         elif width and not height:
             height = width
-
-        new_image = image
-
-        if copy:
-            new_image = image.copy()
-
-        new_image.thumbnail((width, height))
+            
+        new_image = image.resize((width, height), Image.Resampling.LANCZOS)
         new_image.format = image.format
 
         return new_image
@@ -86,7 +84,7 @@ class ImageUtils:
         max_size = MAX_SIZE
 
         if rgb_image.width > max_size or rgb_image.height > max_size:
-            rgb_image = cls.resize(rgb_image, max_size, max_size, copy=False)
+            rgb_image = cls.resize(rgb_image, max_size, max_size)
 
         os.makedirs(output_path, exist_ok=True)
 
@@ -146,7 +144,7 @@ class ImageUtils:
         if crop:
             image = cls._crop_center(source, min(source.size), min(source.size))
 
-        image = cls.resize(image, width, height, copy=False)
+        image = cls.resize(image, width, height)
         image.format = source.format
         filename = os.path.join(
             output_path,
