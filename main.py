@@ -10,7 +10,7 @@ from kaesebrot_commons.logging.utils import LoggingUtils
 
 from api.cache import Cache
 from api.classes import FaviconResponse, ResolutionVariant, TemplateResolutionMetadata
-from api.utils import ImageUtils
+from api.utils.image import ImageProcessor
 from api.constants import Constants
 
 ENV_PREFIX = "RANDHAJ"
@@ -65,7 +65,7 @@ def get_file_response(
         )
 
     if not height and width and width not in Constants.ALLOWED_DIMENSIONS:
-        _, height = ImageUtils.calculate_scaled_size(
+        _, height = ImageProcessor.calculate_scaled_size(
             original_width=metadata.original_width,
             original_height=metadata.original_height,
             width=width,
@@ -76,7 +76,7 @@ def get_file_response(
             )
 
     if not width and height and height not in Constants.ALLOWED_DIMENSIONS:
-        width, _ = ImageUtils.calculate_scaled_size(
+        width, _ = ImageProcessor.calculate_scaled_size(
             original_width=metadata.original_width,
             original_height=metadata.original_height,
             height=height,
@@ -133,7 +133,7 @@ def get_image_page_response(
 
     current_width = Constants.get_default_width()
     metadata = cache.get_metadata(image_id)
-    current_width, current_height = ImageUtils.calculate_scaled_size(
+    current_width, current_height = ImageProcessor.calculate_scaled_size(
         original_width=metadata.original_width,
         original_height=metadata.original_height,
         width=current_width,
@@ -143,7 +143,7 @@ def get_image_page_response(
 
     variants = []
     for width in sorted(Constants.ALLOWED_DIMENSIONS, reverse=True):
-        width, height = ImageUtils.calculate_scaled_size(
+        width, height = ImageProcessor.calculate_scaled_size(
             original_width=metadata.original_width,
             original_height=metadata.original_height,
             width=width,

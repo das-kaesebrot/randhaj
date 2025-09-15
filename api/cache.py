@@ -7,10 +7,13 @@ import inotify.constants
 from PIL import Image
 from typing import Dict, Union
 
-from .constants import Constants
-from .decorators import wait_lock
-from .classes import ImageMetadata
-from .utils import FilenameUtils, ImageUtils, GeneralUtils, ThreadingUtils
+from api.constants import Constants
+from api.decorators import wait_lock
+from api.classes import ImageMetadata
+from api.utils.filename import FilenameUtils
+from api.utils.general import GeneralUtils
+from api.utils.image import ImageProcessor
+from api.utils.threading import ThreadingUtils
 
 from datetime import timedelta
 from time import perf_counter
@@ -71,7 +74,7 @@ class Cache:
         for filename, image in filename_to_image.items():
             try:
                 id, metadata = (
-                    ImageUtils.convert_to_unified_format_and_write_to_filesystem(
+                    ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
                         output_path=self._cache_dir, image=image
                     )
                 )
@@ -135,7 +138,7 @@ class Cache:
                     ThreadingUtils.wait_and_acquire_lock(self._mutex_lock)
                     try:
                         id, metadata = (
-                            ImageUtils.convert_to_unified_format_and_write_to_filesystem(
+                            ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
                                 output_path=self._cache_dir, image=image
                             )
                         )
@@ -183,7 +186,7 @@ class Cache:
         ), GeneralUtils.clamp(height, 0, metadata.original_height)
 
         if not crop:
-            width, height = ImageUtils.calculate_scaled_size(
+            width, height = ImageProcessor.calculate_scaled_size(
                 metadata.original_width,
                 metadata.original_height,
                 width=width,
@@ -209,13 +212,15 @@ class Cache:
                 format=metadata.format,
             ),
         )
-        filename = ImageUtils.write_scaled_copy_from_source_filename_to_filesystem(
-            id=id,
-            source_filename=source_filename,
-            output_path=self._cache_dir,
-            width=width,
-            height=height,
-            crop=crop,
+        filename = (
+            ImageProcessor.write_scaled_copy_from_source_filename_to_filesystem(
+                id=id,
+                source_filename=source_filename,
+                output_path=self._cache_dir,
+                width=width,
+                height=height,
+                crop=crop,
+            )
         )
 
         return filename

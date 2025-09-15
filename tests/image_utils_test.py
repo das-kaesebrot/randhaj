@@ -1,5 +1,5 @@
 import pytest
-from api.utils import ImageUtils
+from api.utils.image import ImageProcessor
 
 testdata = [
     # original_width, original_height, new_width, new_height
@@ -14,7 +14,7 @@ testdata = [
 def test_image_dimensions_should_be_scaled_correctly_with_width(original_width, original_height, new_width, new_height):
     expected_height = new_height
 
-    width, height = ImageUtils.calculate_scaled_size(
+    width, height = ImageProcessor.calculate_scaled_size(
         original_width=original_width, original_height=original_height, width=new_width
     )
     assert width == new_width
@@ -25,7 +25,7 @@ def test_image_dimensions_should_be_scaled_correctly_with_width(original_width, 
 def test_image_dimensions_should_be_scaled_correctly_with_height(original_width, original_height, new_width, new_height):
     expected_width = new_width
 
-    width, height = ImageUtils.calculate_scaled_size(
+    width, height = ImageProcessor.calculate_scaled_size(
         original_width=original_width,
         original_height=original_height,
         height=new_height,
@@ -36,7 +36,7 @@ def test_image_dimensions_should_be_scaled_correctly_with_height(original_width,
 
 @pytest.mark.parametrize("original_width, original_height, new_width, new_height", testdata)
 def test_image_dimensions_should_be_scaled_correctly_with_all_params(original_width, original_height, new_width, new_height):
-    width, height = ImageUtils.calculate_scaled_size(
+    width, height = ImageProcessor.calculate_scaled_size(
         original_width=original_width,
         original_height=original_height,
         height=new_height,
