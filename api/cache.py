@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
 import random
@@ -70,22 +71,31 @@ class Cache:
                     f"Failed loading file '{os.path.join(image_dir, filename)}'"
                 )
                 continue
-
-        for filename, image in filename_to_image.items():
+        
+        def convert_and_save(filename: str, image: Image.Image):
+            self._logger.debug(f"Started conversion job for '{filename}'")
             try:
                 id, metadata = (
                     ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
                         output_path=self._cache_dir, image=image
                     )
                 )
+                ThreadingUtils.wait_and_acquire_lock(self._mutex_lock)
                 self._ids_to_metadata[id] = metadata
                 self._original_filenames_to_ids[filename] = id
-                image.close()
-            except OSError:
+                self._mutex_lock.release()
+                self._logger.debug(f"Done converting '{filename}'")
+            except OSError as e:
                 self._logger.exception(
                     f"Failed writing converted file '{'no filename' if not image.filename else image.filename}'"
                 )
-                continue
+            finally:
+                image.close()
+        
+        with ThreadPoolExecutor(max_workers=Constants.MAX_WORKERS) as executor:
+            self._logger.info(f"Created initial generation threadpool with {executor._max_workers} workers")
+            for filename, image in filename_to_image.items():
+                executor.submit(convert_and_save, filename=filename, image=image)
 
         end = perf_counter()
         self._logger.info(

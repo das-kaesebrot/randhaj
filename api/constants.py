@@ -2,6 +2,7 @@ class Constants:
     ALLOWED_DIMENSIONS = [2048, 1024, 512, 256, 128, 64, 32, 16]
     DEFAULT_FORMAT = "png"
     ALLOWED_INPUT_FILE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
+    MAX_WORKERS = 8
 
     @staticmethod
     def get_default_width():
