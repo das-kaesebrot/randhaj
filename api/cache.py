@@ -48,54 +48,39 @@ class Cache:
 
     def _generate_cache(self) -> Dict[str, ImageMetadata]:
         start = perf_counter()
-        image_dir = self._image_dir
-
-        filename_to_image: dict[str, Image.Image] = {}
-
-        for filename in os.listdir(image_dir):
-            if (
-                not os.path.splitext(filename.lower())[1]
-                in Constants.ALLOWED_INPUT_FILE_EXTENSIONS
-            ):
-                self._logger.warning(
-                    f"Ignoring file '{filename}' because it doesn't have an allowed file extension"
-                )
-                continue
-
-            try:
-                img = Image.open(os.path.join(image_dir, filename))
-                img.load()
-                filename_to_image[filename] = img
-            except OSError as e:
-                self._logger.exception(
-                    f"Failed loading file '{os.path.join(image_dir, filename)}'"
-                )
-                continue
         
-        def convert_and_save(filename: str, image: Image.Image):
+        def convert_and_save(filename: str):
             self._logger.debug(f"Started conversion job for '{filename}'")
-            try:
-                id, metadata = (
-                    ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
-                        output_path=self._cache_dir, image=image
+            try:                
+                with Image.open(os.path.join(self._image_dir, filename)) as image:                
+                    id, metadata = (
+                        ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
+                            output_path=self._cache_dir, image=image
+                        )
                     )
-                )
-                ThreadingUtils.wait_and_acquire_lock(self._mutex_lock)
-                self._ids_to_metadata[id] = metadata
-                self._original_filenames_to_ids[filename] = id
-                self._mutex_lock.release()
-                self._logger.debug(f"Done converting '{filename}'")
+                    ThreadingUtils.wait_and_acquire_lock(self._mutex_lock)
+                    self._ids_to_metadata[id] = metadata
+                    self._original_filenames_to_ids[filename] = id
+                    self._mutex_lock.release()
+                    self._logger.debug(f"Done converting '{filename}'")
             except OSError as e:
                 self._logger.exception(
-                    f"Failed writing converted file '{'no filename' if not image.filename else image.filename}'"
+                    f"Failed converting '{filename}'"
                 )
-            finally:
-                image.close()
         
         with ThreadPoolExecutor(max_workers=Constants.MAX_WORKERS) as executor:
             self._logger.info(f"Created initial generation threadpool with {executor._max_workers} workers")
-            for filename, image in filename_to_image.items():
-                executor.submit(convert_and_save, filename=filename, image=image)
+            for filename in os.listdir(self._image_dir):
+                if (
+                    not os.path.splitext(filename.lower())[1]
+                    in Constants.ALLOWED_INPUT_FILE_EXTENSIONS
+                ):
+                    self._logger.warning(
+                        f"Ignoring file '{filename}' because it doesn't have an allowed file extension"
+                    )
+                    continue
+                
+                executor.submit(convert_and_save, filename=filename)
 
         end = perf_counter()
         self._logger.info(
