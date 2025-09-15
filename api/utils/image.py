@@ -25,16 +25,23 @@ class ImageProcessor:
         width: Union[int, None] = None,
         height: Union[int, None] = None,
         keep_aspect_ratio: bool = True,
+        legacy_mode = False,
     ) -> Image.Image:
         if not width and not height:
             return image  # nothing to do
         
-        if keep_aspect_ratio:
+        if keep_aspect_ratio and not legacy_mode:
             width, height = cls.calculate_scaled_size(image.width, image.height, width=width)
         elif not width and height:
             width = height
         elif width and not height:
             height = width
+        
+        if legacy_mode:
+            new_image = image
+            new_image.thumbnail((width, height))
+            
+            return new_image
             
         new_image = image.resize((width, height), Image.Resampling.LANCZOS)
         new_image.format = image.format
@@ -70,7 +77,7 @@ class ImageProcessor:
         Generates a new image from an input image with the following properties:
         - RGB color palette (no alpha channel)
         - PNG format
-        - Maximum size: 2048 x 2048
+        - Maximum width: 2048 pixels
         - no EXIF data from the input image
 
         Args:
@@ -86,7 +93,7 @@ class ImageProcessor:
         # legacy behaviour :(
         # this has to stay now because otherwise images that are larger than MAX_SIZE would get a different ID
         if rgb_image.width > max_size or rgb_image.height > max_size:
-            rgb_image = cls.resize(rgb_image, max_size, max_size)
+            rgb_image = cls.resize(rgb_image, max_size, max_size, legacy_mode=True)
 
         os.makedirs(output_path, exist_ok=True)
 
