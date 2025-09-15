@@ -1,9 +1,7 @@
 import base64
 import hashlib
-from io import BytesIO
-import math
 import os
-from typing import Callable, Union
+from typing import Union
 from PIL import Image, ImageOps
 
 from ..classes import ImageMetadata
