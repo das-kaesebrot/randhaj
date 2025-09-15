@@ -36,6 +36,7 @@ You may configure the web service via environment variables.
 | `RANDHAJ_SITE_EMOJI` | The site emoji (used for the favicon and title) | `🦈` | No |
 | `RANDHAJ_DEFAULT_CARD_IMAGE` | The image ID to use as the [Open Graph](https://ogp.me/) thumbnail for the root view (`/`) | The (alphabetically) first ID | No |
 | `RANDHAJ_LOG_LEVEL` | The log level (uses `UVICORN_LOG_LEVEL` as fallback if unset, then uses default value) | `INFO` | No |
+| `RANDHAJ_MAX_INITIAL_CACHE_GENERATOR_WORKERS` | How many maximum workers to use for generating the initial image cache | `4` | No |
 | `FORWARDED_ALLOW_IPS` | Reverse proxies to trust (see [Uvicorn docs](https://www.uvicorn.org/settings/)) | `127.0.0.1` | No |
 
 ### Additional HTML head/footer tags

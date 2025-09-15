@@ -30,7 +30,7 @@ class Cache:
     _original_filenames_to_ids: Dict[str, str] = {}
     _mutex_lock: Lock = Lock()
 
-    def __init__(self, *, image_dir: str, cache_dir: str, enable_inotify: bool = True):
+    def __init__(self, *, image_dir: str, cache_dir: str, enable_inotify: bool = True, max_initial_cache_generator_workers: int = 4):
         image_dir = os.path.abspath(image_dir)
         cache_dir = os.path.abspath(cache_dir)
 
@@ -41,12 +41,12 @@ class Cache:
         self._cache_dir = cache_dir
         self._image_dir = image_dir
 
-        self._generate_cache()
+        self._generate_cache(max_threadpool_workers=max_initial_cache_generator_workers)
 
         if enable_inotify:
             self._dispatch_inotify_thread()
 
-    def _generate_cache(self) -> Dict[str, ImageMetadata]:
+    def _generate_cache(self, max_threadpool_workers: int) -> Dict[str, ImageMetadata]:
         start = perf_counter()
         
         def convert_and_save(filename: str):
@@ -68,7 +68,7 @@ class Cache:
                     f"Failed converting '{filename}'"
                 )
         
-        with ThreadPoolExecutor(max_workers=Constants.MAX_WORKERS) as executor:
+        with ThreadPoolExecutor(max_workers=max_threadpool_workers) as executor:
             self._logger.info(f"Created initial generation threadpool with {executor._max_workers} workers")
             for filename in os.listdir(self._image_dir):
                 if (

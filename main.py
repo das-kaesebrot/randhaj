@@ -21,6 +21,7 @@ cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
 site_title = os.getenv(f"{ENV_PREFIX}_SITE_TITLE", "Random image")
 site_emoji = os.getenv(f"{ENV_PREFIX}_SITE_EMOJI", "🦈")
 default_card_image_id = os.getenv(f"{ENV_PREFIX}_DEFAULT_CARD_IMAGE")
+max_initial_cache_generator_workers = int(os.getenv(f"{ENV_PREFIX}_MAX_INITIAL_CACHE_GENERATOR_WORKERS", 4))
 loglevel = os.getenv(
     f"{ENV_PREFIX}_LOG_LEVEL", os.getenv("UVICORN_LOG_LEVEL", logging.INFO)
 )
@@ -36,7 +37,7 @@ app = FastAPI(title=site_title)
 app.mount("/static", StaticFiles(directory="resources/static"), name="static")
 templates = Jinja2Templates(directory="resources/templates")
 
-cache = Cache(image_dir=source_image_dir, cache_dir=cache_dir)
+cache = Cache(image_dir=source_image_dir, cache_dir=cache_dir, max_initial_cache_generator_workers=max_initial_cache_generator_workers)
 
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
