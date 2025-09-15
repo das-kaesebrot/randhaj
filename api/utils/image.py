@@ -90,11 +90,6 @@ class ImageProcessor:
 
         max_size = MAX_SIZE
         
-        # legacy behaviour :(
-        # this has to stay now because otherwise images that are larger than MAX_SIZE would get a different ID
-        if rgb_image.width > max_size or rgb_image.height > max_size:
-            rgb_image = cls.resize(rgb_image, max_size, max_size, legacy_mode=True)
-
         os.makedirs(output_path, exist_ok=True)
 
         id = cls.get_id(data=rgb_image)
