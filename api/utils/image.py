@@ -65,34 +65,6 @@ class ImageUtils:
         return width, height
 
     @staticmethod
-    def convert_to_unified_format_in_buffer(image: Image.Image) -> Image.Image:
-        """
-        Generates a new image from an input image with the following properties:
-        - RGB color palette (no alpha channel)
-        - PNG format
-        - Maximum size: 2048 x 2048
-        - no EXIF data from the input image
-
-        Args:
-            image (PIL.Image.Image): the image to convert
-
-        Returns:
-            PIL.Image.Image: the converted image
-        """
-        rgb_image = image.convert("RGB")
-
-        max_size = MAX_SIZE
-
-        if rgb_image.width > max_size or rgb_image.height > max_size:
-            rgb_image = ImageUtils.resize(rgb_image, max_size, max_size, copy=False)
-
-        buf = BytesIO()
-        rgb_image.save(buf, format=FORMAT)
-        buf.seek(0)
-        new_image = Image.open(buf)
-        return new_image
-
-    @staticmethod
     def convert_to_unified_format_and_write_to_filesystem(
         output_path: str, image: Image.Image, force_write: bool = False
     ) -> tuple[str, ImageMetadata]:
