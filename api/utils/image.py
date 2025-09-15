@@ -64,9 +64,9 @@ class ImageUtils:
 
         return width, height
 
-    @staticmethod
+    @classmethod
     def convert_to_unified_format_and_write_to_filesystem(
-        output_path: str, image: Image.Image, force_write: bool = False
+        cls, output_path: str, image: Image.Image, force_write: bool = False
     ) -> tuple[str, ImageMetadata]:
         """
         Generates a new image from an input image with the following properties:
@@ -86,11 +86,11 @@ class ImageUtils:
         max_size = MAX_SIZE
 
         if rgb_image.width > max_size or rgb_image.height > max_size:
-            rgb_image = ImageUtils.resize(rgb_image, max_size, max_size, copy=False)
+            rgb_image = cls.resize(rgb_image, max_size, max_size, copy=False)
 
         os.makedirs(output_path, exist_ok=True)
 
-        id = ImageUtils.get_id(data=rgb_image)
+        id = cls.get_id(data=rgb_image)
         filename = os.path.join(
             output_path,
             FilenameUtils.get_filename(
@@ -110,8 +110,9 @@ class ImageUtils:
 
         return (id, metadata)
 
-    @staticmethod
+    @classmethod
     def write_scaled_copy_from_source_filename_to_filesystem(
+        cls,
         *,
         id: str,
         source_filename: str,
@@ -121,7 +122,7 @@ class ImageUtils:
         crop: bool = False,
     ) -> str:
         source = Image.open(source_filename)
-        return ImageUtils.write_scaled_copy_to_filesystem(
+        return cls.write_scaled_copy_to_filesystem(
             id=id,
             source=source,
             output_path=output_path,
@@ -130,8 +131,9 @@ class ImageUtils:
             crop=crop,
         )
 
-    @staticmethod
+    @classmethod
     def write_scaled_copy_to_filesystem(
+        cls,
         *,
         id: str,
         source: Image.Image,
@@ -142,9 +144,9 @@ class ImageUtils:
     ) -> str:
         image = source
         if crop:
-            image = ImageUtils._crop_center(source, min(source.size), min(source.size))
+            image = cls._crop_center(source, min(source.size), min(source.size))
 
-        image = ImageUtils.resize(image, width, height, copy=False)
+        image = cls.resize(image, width, height, copy=False)
         image.format = source.format
         filename = os.path.join(
             output_path,
