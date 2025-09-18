@@ -4,11 +4,9 @@ import os
 from typing import Union
 from PIL import Image, ImageOps
 
-from api.decorators import wait_lock
-from api.classes import ImageMetadata
+from api.models import ImageMetadata
 from api.constants import Constants
 from api.utils.filename import FilenameUtils
-from api.utils.threading import ThreadingUtils
 
 MAX_SIZE = Constants.get_max_width()
 FORMAT = Constants.DEFAULT_FORMAT
