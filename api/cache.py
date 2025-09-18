@@ -7,10 +7,13 @@ import inotify.adapters
 import inotify.constants
 from PIL import Image
 from typing import Dict, Union
+from sqlalchemy import Engine, create_engine
+from sqlalchemy.orm import Session
 
 from api.constants import Constants
 from api.decorators import wait_lock
 from api.classes import ImageMetadata
+from api.models import Base
 from api.utils.filename import FilenameUtils
 from api.utils.general import GeneralUtils
 from api.utils.image import ImageProcessor
@@ -30,7 +33,10 @@ class Cache:
     _original_filenames_to_ids: Dict[str, str] = {}
     _mutex_lock: Lock = Lock()
 
-    def __init__(self, *, image_dir: str, cache_dir: str, enable_inotify: bool = True, max_initial_cache_generator_workers: int = 4):
+    __engine: Engine = None
+    __session = None
+
+    def __init__(self, *, image_dir: str, cache_dir: str, enable_inotify: bool = True, max_initial_cache_generator_workers: int = 4, connection_string: str = "sqlite:///"):
         image_dir = os.path.abspath(image_dir)
         cache_dir = os.path.abspath(cache_dir)
 
@@ -40,6 +46,18 @@ class Cache:
         )
         self._cache_dir = cache_dir
         self._image_dir = image_dir
+        
+        self._logger.info(f"Creating database engine with connection string '{connection_string}'")
+        
+        # only echo SQL statements if we're logging at the debug level
+        echo = self._logger.getEffectiveLevel() <= logging.DEBUG
+        
+        self.__engine = create_engine(connection_string, echo=echo)
+        Base.metadata.create_all(self.__engine)
+        self.__session = Session(self.__engine)
+        
+        assert self.__engine is not None
+        assert self.__session is not None
 
         self._generate_cache(max_threadpool_workers=max_initial_cache_generator_workers)
 

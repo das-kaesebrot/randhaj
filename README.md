@@ -68,6 +68,10 @@ This application uses Open Source components. You can find the source code of th
 - Copyright (c) [Dustin Oprea](https://github.com/dsoprea) and [other contributors](https://github.com/dsoprea/PyInotify/graphs/contributors)
 - [GPL-2.0 license](https://github.com/dsoprea/PyInotify/blob/master/LICENSE)
 
+### [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy)
+- Copyright (c) 2005-present [SQLAlchemy authors and contributors](https://github.com/sqlalchemy/sqlalchemy/blob/main/AUTHORS)
+- [MIT License](https://github.com/sqlalchemy/sqlalchemy/blob/main/LICENSE)
+
 ### [Flake8](https://github.com/PyCQA/flake8)
 - Copyright (c) 2011-2013 Tarek Ziade <tarek@ziade.org>
 - [Flake8 license (MIT)](https://github.com/PyCQA/flake8/blob/main/LICENSE)
