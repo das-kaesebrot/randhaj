@@ -3,7 +3,7 @@ import os
 from typing import Union
 import crawleruseragents
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from kaesebrot_commons.logging.utils import LoggingUtils
@@ -201,13 +201,9 @@ async def get_favicon():
     )
 
 
-@app.get("/", response_class=Union[HTMLResponse, RedirectResponse])
-async def page_redirect_rand_image(request: Request, redirect: bool = False):
+@app.get("/", response_class=HTMLResponse)
+async def page_redirect_rand_image(request: Request):
     image_id = cache.get_random_id()
-
-    if redirect:
-        return RedirectResponse(request.url_for("page_get_image", image_id=image_id))
-
     return get_image_page_response(request, image_id)
 
 
