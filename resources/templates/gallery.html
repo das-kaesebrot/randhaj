@@ -1,0 +1,49 @@
+{% extends "content-base.html" %}
+
+{% block opengraph_title %}Gallery{% endblock opengraph_title %}
+{% block title %}{{ site_title }} | Gallery (page {{ page_num }}){% endblock title %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        @media only screen and (max-width: 768px) {
+            .btn, .btn-group {
+                width:100%;
+            }
+
+            #image {
+                max-width: 100%;
+                max-height: 50vh;
+            }
+        }
+
+        body {
+            background-image:
+            linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+                linear-gradient(45deg,rgba(91, 206, 250, 0.2) 0%, rgba(245, 169, 184, 0.8) 100%),
+                linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
+                url({{ url_for('api_get_image', image_id=default_card_image_id).include_query_params(width=current_width) }});
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+        <h1 class="pt-3 mt-4">{{ site_emoji }} {{ site_title }}</h1>
+        <h2 class="pt-3 mt-4">Gallery (page {{ page_num }})</h2>
+        <div class="align-items-center row justify-content-md-center">
+            {% for image_id in image_ids %}
+            <div class="mt-3 col col-auto">
+                <a href="{{ url_for('page_get_image', image_id=image_id) }}">
+                    <img id="image" class="rounded img-fluid" src="{{ url_for('api_get_image', image_id=image_id).include_query_params(width=current_width, square=True) }}" alt="Image {{ image_id }}" />
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+{% endblock content %}
