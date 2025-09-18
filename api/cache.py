@@ -49,7 +49,7 @@ class Cache:
         # only echo SQL statements if we're logging at the debug level
         echo = self._logger.getEffectiveLevel() <= logging.DEBUG
         
-        self.__engine = create_engine(connection_string, echo=echo)
+        self.__engine = create_engine(connection_string, echo=echo, connect_args={'check_same_thread': False})
         Base.metadata.create_all(self.__engine)
         self.__session = Session(self.__engine)
         
