@@ -193,6 +193,44 @@ def get_image_page_response(
             "thumbnail_width": Constants.get_small_thumbnail_width(),
         },
     )
+    
+def get_gallery_page_response(
+    request: Request, page: int = 1, page_size = 50,
+) -> HTMLResponse:
+    if page < 1:
+        raise HTTPException(
+            status_code=400, detail=f"Page can't be smaller than 1!"
+        )
+        
+    if page_size > 50:
+        raise HTTPException(
+            status_code=400, detail=f"Page size can't be bigger than 50!"
+        )        
+    
+    page_max = (cache.get_total_image_count() // page_size) + 1
+    if page > page_max:
+        raise HTTPException(
+            status_code=400, detail=f"Page can't be bigger than {page_max}!"
+        )        
+        
+    ids = cache.get_ids_paged(page = page - 1, page_size = page_size)
+    current_width = Constants.get_small_thumbnail_width()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="gallery.html",
+        context={
+            "site_emoji": site_emoji,
+            "site_title": site_title,
+            "version": version,
+            "default_card_image_id": default_card_image_id,
+            "thumbnail_width": Constants.get_small_thumbnail_width(),
+            "image_ids": ids,
+            "current_width": current_width,
+            "page_num": page,
+        },
+    )
+
 
 
 @view_router.get("/favicon.ico", response_class=FaviconResponse)
@@ -209,14 +247,13 @@ async def page_redirect_rand_image(request: Request):
     image_id = cache.get_random_id()
     return get_image_page_response(request, image_id)
 
+@view_router.get("/gallery", response_class=HTMLResponse)
+async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50):
+    return get_gallery_page_response(request, page, page_size)
 
 @view_router.get("/{image_id}", response_class=HTMLResponse)
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
-
-@view_router.get("/gallery", response_class=HTMLResponse)
-async def page_get_gallery(request: Request, page: int = 0):
-    return ""
 
 @api_router.get("/img/{image_id}")
 async def api_get_image(
