@@ -45,7 +45,7 @@ If you'd like to add additional tags in the `<head>` section or `<footer>` secti
 | Tag | Filename | Remarks |
 | - | - | - |
 | `<head>` | `head.html` | Inserted before closing `<head>` tag |
-| `<footer>` | `footer.html` | Inserted before closing `<footer>` tag |
+| `<footer>` | `footer.html` | Inserted after opening `<footer>` tag |
 
 ## Open Source License Attribution
 
