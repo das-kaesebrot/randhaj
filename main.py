@@ -50,7 +50,7 @@ def get_file_response(
     height: Union[int, None] = None,
     download: bool = False,
     set_cache_header: bool = True,
-    is_thumbnail: bool = False,
+    square: bool = False,
 ) -> FileResponse:
     if not cache.id_exists(image_id):
         raise HTTPException(
@@ -59,11 +59,10 @@ def get_file_response(
 
     metadata = cache.get_metadata(image_id)
 
-    if is_thumbnail:
-        width, height = (
-            Constants.get_small_thumbnail_width(),
-            Constants.get_small_thumbnail_width(),
-        )
+    if square:
+        if not width:
+            width = Constants.get_max_width()
+        height = width
 
     if not height and width and width not in Constants.ALLOWED_DIMENSIONS:
         _, height = ImageProcessor.calculate_scaled_size(
@@ -89,7 +88,7 @@ def get_file_response(
             )
 
     filename = cache.get_filename(
-        image_id, width=width, height=height, crop=is_thumbnail
+        image_id, width=width, height=height, square=square
     )
 
     headers = {
@@ -129,6 +128,7 @@ def get_image_page_response(
                 "image_id": image_id,
                 "is_direct_request": is_direct_request,
                 "default_card_image_id": default_card_image_id,
+                "thumbnail_width": Constants.get_small_thumbnail_width(),
             },
         )
 
@@ -159,7 +159,7 @@ def get_image_page_response(
                 id=image_id,
                 width=width,
                 height=height,
-                crop=False,
+                square=False,
                 generate_variant_if_missing=False,
             )
         )
@@ -187,6 +187,7 @@ def get_image_page_response(
             "resolution_data": resolution_data,
             "is_direct_request": is_direct_request,
             "default_card_image_id": default_card_image_id,
+            "thumbnail_width": Constants.get_small_thumbnail_width(),
         },
     )
 
@@ -221,7 +222,7 @@ async def api_get_image(
     width: Union[int, None] = None,
     height: Union[int, None] = None,
     download: bool = False,
-    thumb: bool = False,
+    square: bool = False,
 ):
     if image_id.endswith(f".{Constants.DEFAULT_FORMAT}"):
         image_id = image_id.rstrip(f".{Constants.DEFAULT_FORMAT}")
@@ -231,7 +232,7 @@ async def api_get_image(
         width=width,
         height=height,
         download=download,
-        is_thumbnail=thumb,
+        square=square,
     )
 
 

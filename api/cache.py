@@ -181,24 +181,26 @@ class Cache:
         id: str,
         width: Union[int, None] = None,
         height: Union[int, None] = None,
-        crop: bool = False,
+        square: bool = False,
         generate_variant_if_missing: bool = True,
     ) -> str:
         metadata = self.get_metadata(id=id)
         if not metadata:
             raise ValueError(f"Can't find image by id '{id}'!")
-        
-        width, height = GeneralUtils.clamp(
-            width, 0, metadata.original_width
-        ), GeneralUtils.clamp(height, 0, metadata.original_height)
 
-        if not crop:
+        if square:
+            height = width
+        else:
             width, height = ImageProcessor.calculate_scaled_size(
                 metadata.original_width,
                 metadata.original_height,
                 width=width,
                 height=height,
             )
+        
+            width, height = GeneralUtils.clamp(
+                width, 0, metadata.original_width
+            ), GeneralUtils.clamp(height, 0, metadata.original_height)
 
         expected_filename = os.path.join(
             self._cache_dir,
@@ -226,7 +228,7 @@ class Cache:
                 output_path=self._cache_dir,
                 width=width,
                 height=height,
-                crop=crop,
+                crop_square=square,
             )
         )
 

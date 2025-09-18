@@ -123,7 +123,7 @@ class ImageProcessor:
         output_path: str,
         width: Union[int, None] = None,
         height: Union[int, None] = None,
-        crop: bool = False,
+        crop_square: bool = False,
     ) -> str:
         source = Image.open(source_filename)
         return cls.write_scaled_copy_to_filesystem(
@@ -132,7 +132,7 @@ class ImageProcessor:
             output_path=output_path,
             width=width,
             height=height,
-            crop=crop,
+            crop_square=crop_square,
         )
 
     @classmethod
@@ -144,10 +144,10 @@ class ImageProcessor:
         output_path: str,
         width: Union[int, None] = None,
         height: Union[int, None] = None,
-        crop: bool = False,
+        crop_square: bool = False,
     ) -> str:
         image = source
-        if crop:
+        if crop_square:
             image = cls._crop_center(source, min(source.size), min(source.size))
 
         image = cls.resize(image, width, height)
