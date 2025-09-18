@@ -107,7 +107,7 @@ class Cache:
     def _dispatch_inotify_thread(self):
         self._logger.info("Dispatching inotify thread")
 
-        self._inotify_thread = Thread(target=self._watch_fs_events)
+        self._inotify_thread = Thread(target=self._watch_fs_events, daemon=True)
         self._inotify_thread.start()
 
     def _watch_fs_events(self):
