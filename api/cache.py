@@ -6,14 +6,13 @@ from threading import Thread, Lock
 import inotify.adapters
 import inotify.constants
 from PIL import Image
-from typing import Dict, Union
-from sqlalchemy import Engine, create_engine
+from typing import Union
+from sqlalchemy import Engine, create_engine, delete, func, select
 from sqlalchemy.orm import Session
 
 from api.constants import Constants
 from api.decorators import wait_lock
-from api.classes import ImageMetadata
-from api.models import Base
+from api.models import Base, CachedImage, ImageMetadata
 from api.utils.filename import FilenameUtils
 from api.utils.general import GeneralUtils
 from api.utils.image import ImageProcessor
@@ -24,13 +23,11 @@ from time import perf_counter
 
 
 class Cache:
-    _ids_to_metadata: Dict[str, ImageMetadata] = {}
     _image_dir: str
     _cache_dir: str
     _logger: logging.Logger
 
     _inotify_thread: Thread
-    _original_filenames_to_ids: Dict[str, str] = {}
     _mutex_lock: Lock = Lock()
 
     __engine: Engine = None
@@ -64,7 +61,7 @@ class Cache:
         if enable_inotify:
             self._dispatch_inotify_thread()
 
-    def _generate_cache(self, max_threadpool_workers: int) -> Dict[str, ImageMetadata]:
+    def _generate_cache(self, max_threadpool_workers: int):
         start = perf_counter()
         
         def convert_and_save(filename: str):
@@ -77,8 +74,8 @@ class Cache:
                         )
                     )
                     ThreadingUtils.wait_and_acquire_lock(self._mutex_lock)
-                    self._ids_to_metadata[id] = metadata
-                    self._original_filenames_to_ids[filename] = id
+                    cached_image = CachedImage(id = id, original_filename = filename, image_metadata = metadata)
+                    self.__session.add(cached_image)
                     self._mutex_lock.release()
                     self._logger.debug(f"Done converting '{filename}'")
             except OSError as e:
@@ -99,10 +96,12 @@ class Cache:
                     continue
                 
                 executor.submit(convert_and_save, filename=filename)
-
+                
+        self._commit_and_flush()
+                
         end = perf_counter()
         self._logger.info(
-            f"Generated {len(self._ids_to_metadata.keys())} cached images in {timedelta(seconds=end-start)}"
+            f"Generated {self.get_total_image_count()} cached images in {timedelta(seconds=end-start)}"
         )
 
     def _dispatch_inotify_thread(self):
@@ -155,8 +154,8 @@ class Cache:
                                 output_path=self._cache_dir, image=image
                             )
                         )
-                        self._ids_to_metadata[id] = metadata
-                        self._original_filenames_to_ids[filename] = id
+                        cached_image = CachedImage(id = id, original_filename = filename, image_metadata = metadata)
+                        self.__session.add(cached_image)
                     except OSError as e:
                         logger.exception("Exception while converting file")
                         continue
@@ -169,12 +168,7 @@ class Cache:
                     mask & inotify.constants.IN_DELETE
                 ) == inotify.constants.IN_DELETE:
                     logger.info(f"Detected deleted file '{filename}', adjusting cache")
-                    ThreadingUtils.wait_and_acquire_lock(self._mutex_lock)
-                    id = self._original_filenames_to_ids.get(filename)
-                    if id:
-                        del self._original_filenames_to_ids[filename]
-                        del self._ids_to_metadata[id]
-                    self._mutex_lock.release()
+                    self._delete_by_original_filename(filename)
 
         except KeyboardInterrupt or InterruptedError as e:
             logger.info(f"{type(e).__name__} received. Stopping thread.")
@@ -190,10 +184,10 @@ class Cache:
         crop: bool = False,
         generate_variant_if_missing: bool = True,
     ) -> str:
-        ThreadingUtils.wait_and_acquire_lock(self._mutex_lock)
-        metadata = self._ids_to_metadata.get(id)
-        self._mutex_lock.release()
-
+        metadata = self.get_metadata(id=id)
+        if not metadata:
+            raise ValueError(f"Can't find image by id '{id}'!")
+        
         width, height = GeneralUtils.clamp(
             width, 0, metadata.original_width
         ), GeneralUtils.clamp(height, 0, metadata.original_height)
@@ -237,23 +231,48 @@ class Cache:
         )
 
         return filename
-
+    
     @wait_lock(_mutex_lock)
     def get_random_id(self) -> str:
-        return random.choice(list(self._ids_to_metadata.keys()))
-
-    @wait_lock(_mutex_lock)
-    def get_random(self) -> tuple[str, ImageMetadata]:
-        return random.choice(list(self._ids_to_metadata.values()))
-
+        select_statement = select(CachedImage.id).order_by(func.random()).limit(1)
+        return self.__session.scalars(select_statement).one_or_none()
+    
     @wait_lock(_mutex_lock)
     def get_metadata(self, id: str) -> Union[ImageMetadata, None]:
-        return self._ids_to_metadata.get(id)
+        select_statement = select(ImageMetadata).where(ImageMetadata.id.is_(id))
+        return self.__session.scalars(select_statement).one_or_none()
 
     @wait_lock(_mutex_lock)
     def id_exists(self, id: str) -> bool:
-        return id in self._ids_to_metadata.keys()
+        select_statement = select(CachedImage.id).where(CachedImage.id.is_(id))
+        return self.__session.scalars(select_statement).one_or_none() is not None
 
     @wait_lock(_mutex_lock)
-    def get_first_id(self) -> dict[str, ImageMetadata]:
-        return sorted(self._ids_to_metadata.keys())[0]
+    def get_first_id(self) -> str:
+        select_statement = select(CachedImage.id).order_by(CachedImage.id).limit(1)
+        return self.__session.scalars(select_statement).one_or_none()
+    
+    @wait_lock(_mutex_lock)
+    def get_all_ids(self) -> list[str]:
+        select_statement = select(CachedImage.id)
+        return self.__session.scalars(select_statement).all()
+    
+    @wait_lock(_mutex_lock)
+    def get_all_images(self) -> list[CachedImage]:
+        select_statement = select(CachedImage)
+        return self.__session.scalars(select_statement).all()
+    
+    @wait_lock(_mutex_lock)
+    def _delete_by_original_filename(self, original_filename: str):
+        delete_statement = delete(CachedImage).where(CachedImage.original_filename.is_(original_filename))
+        self.__session.execute(delete_statement)
+        self._commit_and_flush()
+    
+    def _commit_and_flush(self):
+        self.__session.commit()
+        self.__session.flush()
+        
+    @wait_lock(_mutex_lock)
+    def get_total_image_count(self) -> int:
+        select_statement = select(func.count()).select_from(CachedImage)
+        return self.__session.execute(select_statement).scalar() or 0
