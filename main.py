@@ -2,7 +2,7 @@ import logging
 import os
 from typing import Union
 import crawleruseragents
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -36,6 +36,9 @@ for name in logging.root.manager.loggerDict.keys():
 app = FastAPI(title=site_title)
 app.mount("/static", StaticFiles(directory="resources/static"), name="static")
 templates = Jinja2Templates(directory="resources/templates")
+
+api_router = APIRouter(tags=["api"])
+view_router = APIRouter(tags=["view"], default_response_class=HTMLResponse)
 
 cache = Cache(image_dir=source_image_dir, cache_dir=cache_dir, max_initial_cache_generator_workers=max_initial_cache_generator_workers)
 
@@ -192,7 +195,7 @@ def get_image_page_response(
     )
 
 
-@app.get("/favicon.ico", response_class=FaviconResponse)
+@view_router.get("/favicon.ico", response_class=FaviconResponse)
 async def get_favicon():
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
@@ -201,18 +204,21 @@ async def get_favicon():
     )
 
 
-@app.get("/", response_class=HTMLResponse)
+@view_router.get("/", response_class=HTMLResponse)
 async def page_redirect_rand_image(request: Request):
     image_id = cache.get_random_id()
     return get_image_page_response(request, image_id)
 
 
-@app.get("/{image_id}", response_class=HTMLResponse)
+@view_router.get("/{image_id}", response_class=HTMLResponse)
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
 
+@view_router.get("/gallery", response_class=HTMLResponse)
+async def page_get_gallery(request: Request, page: int = 0):
+    return ""
 
-@app.get("/api/img/{image_id}")
+@api_router.get("/img/{image_id}")
 async def api_get_image(
     image_id: str,
     width: Union[int, None] = None,
@@ -232,7 +238,7 @@ async def api_get_image(
     )
 
 
-@app.get("/api/img")
+@api_router.get("/img")
 async def api_get_rand_image(
     width: Union[int, None] = None,
     height: Union[int, None] = None,
@@ -246,3 +252,7 @@ async def api_get_rand_image(
         download=download,
         set_cache_header=False,
     )
+
+
+app.include_router(api_router, prefix="/api/v1")
+app.include_router(view_router)
