@@ -258,6 +258,11 @@ class Cache:
         return self.__session.scalars(select_statement).all()
     
     @wait_lock(_mutex_lock)
+    def get_ids_paged(self, page: int = 0, page_size: int = 50) -> list[str]:
+        select_statement = select(CachedImage.id).order_by(CachedImage.id).offset(page * page_size).limit(page_size)
+        return self.__session.scalars(select_statement).all()
+    
+    @wait_lock(_mutex_lock)
     def get_all_images(self) -> list[CachedImage]:
         select_statement = select(CachedImage)
         return self.__session.scalars(select_statement).all()
