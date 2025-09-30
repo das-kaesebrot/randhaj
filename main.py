@@ -214,6 +214,9 @@ async def page_redirect_rand_image(request: Request, redirect: bool = False):
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
 
+@app.get("/api/img/health")
+async def api_get_health():
+    return { "status": "healthy" }
 
 @app.get("/api/img/{image_id}")
 async def api_get_image(
