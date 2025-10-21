@@ -1,7 +1,7 @@
 {% extends "content-base.html" %}
 
 {% block opengraph_title %}Gallery{% endblock opengraph_title %}
-{% block title %}{{ site_title }} | Gallery (page {{ page_num }}){% endblock title %}
+{% block title %}{{ site_title }} | Gallery (Page {{ page_num }} of {{ page_max }}){% endblock title %}
 
 {% block head %}
     {{ super() }}
