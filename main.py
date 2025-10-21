@@ -33,7 +33,7 @@ for name in logging.root.manager.loggerDict.keys():
     logging.getLogger(name).propagate = True
 
 
-app = FastAPI(title=site_title)
+app = FastAPI(title=site_title, version=version)
 app.mount("/static", StaticFiles(directory="resources/static"), name="static")
 templates = Jinja2Templates(directory="resources/templates")
 
