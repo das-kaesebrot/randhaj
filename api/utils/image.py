@@ -4,11 +4,9 @@ import os
 from typing import Union
 from PIL import Image, ImageOps
 
-from api.decorators import wait_lock
-from api.classes import ImageMetadata
+from api.models import ImageMetadata
 from api.constants import Constants
 from api.utils.filename import FilenameUtils
-from api.utils.threading import ThreadingUtils
 
 MAX_SIZE = Constants.get_max_width()
 FORMAT = Constants.DEFAULT_FORMAT
@@ -125,7 +123,7 @@ class ImageProcessor:
         output_path: str,
         width: Union[int, None] = None,
         height: Union[int, None] = None,
-        crop: bool = False,
+        crop_square: bool = False,
     ) -> str:
         source = Image.open(source_filename)
         return cls.write_scaled_copy_to_filesystem(
@@ -134,7 +132,7 @@ class ImageProcessor:
             output_path=output_path,
             width=width,
             height=height,
-            crop=crop,
+            crop_square=crop_square,
         )
 
     @classmethod
@@ -146,10 +144,10 @@ class ImageProcessor:
         output_path: str,
         width: Union[int, None] = None,
         height: Union[int, None] = None,
-        crop: bool = False,
+        crop_square: bool = False,
     ) -> str:
         image = source
-        if crop:
+        if crop_square:
             image = cls._crop_center(source, min(source.size), min(source.size))
 
         image = cls.resize(image, width, height)

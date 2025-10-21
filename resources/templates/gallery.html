@@ -1,0 +1,86 @@
+{% extends "content-base.html" %}
+
+{% block opengraph_title %}Gallery{% endblock opengraph_title %}
+{% block title %}{{ site_title }} | Gallery (Page {{ page_num }} of {{ page_max }}){% endblock title %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        @media only screen and (max-width: 768px) {
+            .btn, .btn-group {
+                width:100%;
+            }
+
+            #image {
+                max-width: 100%;
+                max-height: 50vh;
+            }
+        }
+
+        body {
+            background-image:
+            linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+                linear-gradient(45deg,rgba(91, 206, 250, 0.2) 0%, rgba(245, 169, 184, 0.8) 100%),
+                linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
+                url({{ url_for('api_get_image', image_id=default_card_image_id).include_query_params(width=current_width) }});
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+        }
+
+        .btn, .dropdown-toggle {
+            color: rgb(33, 37, 41);
+            border-color: white;
+            background-image: linear-gradient(45deg,rgba(91, 206, 250, 1) 0%, rgba(245, 169, 184, 1) 100%);
+
+            &:hover {
+                color: rgb(33, 37, 41);
+                background-image: linear-gradient(45deg,rgba(91, 206, 250, 1) 0%, rgba(245, 169, 184, 1) 50%);
+                border-color: rgb(33, 37, 41);
+            }
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+        {% block gallery_navigator %}
+        <div class="mt-3 row justify-content-md-center">
+            {% if page_num > 1 %}
+                <div class="col-md-auto mt-1">
+                    <a role="button" class="btn"
+                        href="{{ url_for('page_get_gallery').include_query_params(page=page_num-1, page_size=page_size) }}">
+                        {%- include 'svg/bi-arrow-left.svg' %} Previous
+                    </a>
+                </div>
+            {% endif %}
+            <div class="col-md-auto mt-1">
+                <a role="button" class="btn"
+                    href="{{ url_for('page_get_gallery').include_query_params(page=page_num, page_size=page_size) }}">
+                    {%- include 'svg/bi-image.svg' %} Page {{ page_num }} of {{ page_max }}
+                </a>
+            </div>
+            {% if page_num < page_max %}
+                <div class="col-md-auto mt-1">
+                    <a role="button" class="btn"
+                        href="{{ url_for('page_get_gallery').include_query_params(page=page_num+1, page_size=page_size) }}">
+                        {%- include 'svg/bi-arrow-right.svg' %} Next
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        {% endblock gallery_navigator %}
+        <div class="align-items-center row justify-content-md-center">
+            {% for image_id in image_ids %}
+            <div class="mt-3 col col-auto">
+                <a href="{{ url_for('page_get_image', image_id=image_id) }}">
+                    <img id="image" class="rounded img-fluid" src="{{ url_for('api_get_image', image_id=image_id).include_query_params(width=current_width, square=True) }}" alt="Image {{ image_id }}" />
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {{ self.gallery_navigator() }}
+{% endblock content %}

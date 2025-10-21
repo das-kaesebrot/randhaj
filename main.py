@@ -2,8 +2,8 @@ import logging
 import os
 from typing import Union
 import crawleruseragents
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi import APIRouter, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from kaesebrot_commons.logging.utils import LoggingUtils
@@ -33,9 +33,12 @@ for name in logging.root.manager.loggerDict.keys():
     logging.getLogger(name).propagate = True
 
 
-app = FastAPI(title=site_title)
+app = FastAPI(title=site_title, version=version)
 app.mount("/static", StaticFiles(directory="resources/static"), name="static")
 templates = Jinja2Templates(directory="resources/templates")
+
+api_router = APIRouter(tags=["api"])
+view_router = APIRouter(tags=["view"], default_response_class=HTMLResponse)
 
 cache = Cache(image_dir=source_image_dir, cache_dir=cache_dir, max_initial_cache_generator_workers=max_initial_cache_generator_workers)
 
@@ -50,7 +53,7 @@ def get_file_response(
     height: Union[int, None] = None,
     download: bool = False,
     set_cache_header: bool = True,
-    is_thumbnail: bool = False,
+    square: bool = False,
 ) -> FileResponse:
     if not cache.id_exists(image_id):
         raise HTTPException(
@@ -59,11 +62,10 @@ def get_file_response(
 
     metadata = cache.get_metadata(image_id)
 
-    if is_thumbnail:
-        width, height = (
-            Constants.get_small_thumbnail_width(),
-            Constants.get_small_thumbnail_width(),
-        )
+    if square:
+        if not width:
+            width = Constants.get_max_width()
+        height = width
 
     if not height and width and width not in Constants.ALLOWED_DIMENSIONS:
         _, height = ImageProcessor.calculate_scaled_size(
@@ -89,7 +91,7 @@ def get_file_response(
             )
 
     filename = cache.get_filename(
-        image_id, width=width, height=height, crop=is_thumbnail
+        image_id, width=width, height=height, square=square
     )
 
     headers = {
@@ -129,6 +131,7 @@ def get_image_page_response(
                 "image_id": image_id,
                 "is_direct_request": is_direct_request,
                 "default_card_image_id": default_card_image_id,
+                "thumbnail_width": Constants.get_small_thumbnail_width(),
             },
         )
 
@@ -159,7 +162,7 @@ def get_image_page_response(
                 id=image_id,
                 width=width,
                 height=height,
-                crop=False,
+                square=False,
                 generate_variant_if_missing=False,
             )
         )
@@ -187,11 +190,54 @@ def get_image_page_response(
             "resolution_data": resolution_data,
             "is_direct_request": is_direct_request,
             "default_card_image_id": default_card_image_id,
+            "thumbnail_width": Constants.get_small_thumbnail_width(),
+            "nav_page": "image",
+        },
+    )
+    
+def get_gallery_page_response(
+    request: Request, page: int = 1, page_size = 50,
+) -> HTMLResponse:
+    if page < 1:
+        raise HTTPException(
+            status_code=400, detail=f"Page can't be smaller than 1!"
+        )
+        
+    if page_size > 50:
+        raise HTTPException(
+            status_code=400, detail=f"Page size can't be bigger than 50!"
+        )        
+    
+    page_max = (cache.get_total_image_count() // page_size) + 1
+    if page > page_max:
+        raise HTTPException(
+            status_code=400, detail=f"Page can't be bigger than {page_max}!"
+        )        
+        
+    ids = cache.get_ids_paged(page = page - 1, page_size = page_size)
+    current_width = Constants.get_small_thumbnail_width()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="gallery.html",
+        context={
+            "site_emoji": site_emoji,
+            "site_title": site_title,
+            "version": version,
+            "default_card_image_id": default_card_image_id,
+            "thumbnail_width": Constants.get_small_thumbnail_width(),
+            "image_ids": ids,
+            "current_width": current_width,
+            "page_num": page,
+            "page_max": page_max,
+            "page_size": page_size,
+            "nav_page": "gallery",
         },
     )
 
 
-@app.get("/favicon.ico", response_class=FaviconResponse)
+
+@view_router.get("/favicon.ico", response_class=FaviconResponse)
 async def get_favicon():
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
@@ -200,31 +246,26 @@ async def get_favicon():
     )
 
 
-@app.get("/", response_class=Union[HTMLResponse, RedirectResponse])
-async def page_redirect_rand_image(request: Request, redirect: bool = False):
+@view_router.get("/", response_class=HTMLResponse)
+async def page_redirect_rand_image(request: Request):
     image_id = cache.get_random_id()
-
-    if redirect:
-        return RedirectResponse(request.url_for("page_get_image", image_id=image_id))
-
     return get_image_page_response(request, image_id)
 
+@view_router.get("/gallery", response_class=HTMLResponse)
+async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50):
+    return get_gallery_page_response(request, page, page_size)
 
-@app.get("/{image_id}", response_class=HTMLResponse)
+@view_router.get("/{image_id}", response_class=HTMLResponse)
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
 
-@app.get("/api/img/health")
-async def api_get_health():
-    return { "status": "healthy" }
-
-@app.get("/api/img/{image_id}")
+@api_router.get("/img/{image_id}")
 async def api_get_image(
     image_id: str,
     width: Union[int, None] = None,
     height: Union[int, None] = None,
     download: bool = False,
-    thumb: bool = False,
+    square: bool = False,
 ):
     if image_id.endswith(f".{Constants.DEFAULT_FORMAT}"):
         image_id = image_id.rstrip(f".{Constants.DEFAULT_FORMAT}")
@@ -234,11 +275,11 @@ async def api_get_image(
         width=width,
         height=height,
         download=download,
-        is_thumbnail=thumb,
+        square=square,
     )
 
 
-@app.get("/api/img")
+@api_router.get("/img")
 async def api_get_rand_image(
     width: Union[int, None] = None,
     height: Union[int, None] = None,
@@ -252,3 +293,7 @@ async def api_get_rand_image(
         download=download,
         set_cache_header=False,
     )
+
+
+app.include_router(api_router, prefix="/api/v1")
+app.include_router(view_router)

@@ -13,8 +13,8 @@ A web service that displays a random image, made primarily to show random pictur
 - [x] [Open Graph protocol](https://ogp.me/) integration for link previews
 - [x] [inotify](https://linux.die.net/man/7/inotify)-based watchfolder support: images are automatically added/removed when copied/deleted to/from the input folder
 - [x] optimized slim page responses for crawlers (return just Open Graph tags and the html header)
-- [ ] gallery page
-- [ ] pageable image API
+- [x] gallery page
+- [x] pageable image API
 - [ ] responsive page UI with focus on mobile usage
 - [ ] as few HTML/CSS/Javascript dependencies as possible
 
@@ -67,6 +67,10 @@ This application uses Open Source components. You can find the source code of th
 ### [inotify](https://github.com/dsoprea/PyInotify)
 - Copyright (c) [Dustin Oprea](https://github.com/dsoprea) and [other contributors](https://github.com/dsoprea/PyInotify/graphs/contributors)
 - [GPL-2.0 license](https://github.com/dsoprea/PyInotify/blob/master/LICENSE)
+
+### [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy)
+- Copyright (c) 2005-present [SQLAlchemy authors and contributors](https://github.com/sqlalchemy/sqlalchemy/blob/main/AUTHORS)
+- [MIT License](https://github.com/sqlalchemy/sqlalchemy/blob/main/LICENSE)
 
 ### [Flake8](https://github.com/PyCQA/flake8)
 - Copyright (c) 2011-2013 Tarek Ziade <tarek@ziade.org>
