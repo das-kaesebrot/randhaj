@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = {extras = ["standard"], version = "~=0.116.1"}
+fastapi = {extras = ["standard"], version = "~=0.118.0"}
 pillow = "~=11.3.0"
 jinja2 = "~=3.1.6"
 kaesebrot_commons = {git = "https://github.com/das-kaesebrot/python-commons.git", ref = "v0.0.3"}
