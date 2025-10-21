@@ -191,6 +191,7 @@ def get_image_page_response(
             "is_direct_request": is_direct_request,
             "default_card_image_id": default_card_image_id,
             "thumbnail_width": Constants.get_small_thumbnail_width(),
+            "nav_page": "image",
         },
     )
     
@@ -228,6 +229,9 @@ def get_gallery_page_response(
             "image_ids": ids,
             "current_width": current_width,
             "page_num": page,
+            "page_max": page_max,
+            "page_size": page_size,
+            "nav_page": "gallery",
         },
     )
 

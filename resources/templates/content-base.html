@@ -1,13 +1,40 @@
 {% extends "base.html" %}
 
 {% block body %}
+{% block navbar %}
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% if nav_page == "image" %}#{% else %}{{ url_for('page_redirect_rand_image') }}{% endif %}">{{ self.opengraph_site_name() }}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link{% if nav_page == "image" %} active" aria-current="page" href="#"{% else %}" href="{{ url_for('page_redirect_rand_image') }}"{% endif %}>{% include 'svg/bi-house.svg' %} Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{% if nav_page == "gallery" %} active" aria-current="page" href="#"{% else %}" href="{{ url_for('page_get_gallery') }}"{% endif %}>{% include 'svg/bi-images.svg' %} Gallery</a>
+        </li>
+      </ul>
+      <div class="d-flex" role="search">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('swagger_ui_html') }}">{% include 'svg/bi-box-arrow-up-right.svg' %} Swagger UI</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('redoc_html') }}">{% include 'svg/bi-box-arrow-up-right.svg' %} ReDoc</a></li>
+            <li class="nav-item"><a class="nav-link" target="_blank" href="https://github.com/das-kaesebrot/randhaj">{% include 'svg/bi-git.svg' %} GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+{% endblock navbar %}
 <div class="container-fluid text-center">
     {% block content %}{% endblock %}
 </div>
 <footer class="pt-2 mt-2 text-center text-body-secondary fw-light">
     {% include "custom/footer.html" ignore missing %}
     {% block footer %}
-    <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" class="text-reset">randhaj</a> version <code>{{ version }}</code></p>
+    <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code></p>
     {% endblock footer %}
 </footer>
 {% endblock body %}
