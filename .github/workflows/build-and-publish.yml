@@ -45,7 +45,6 @@ jobs:
         pytest
 
   build-and-push-image:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: test
     permissions:
@@ -85,7 +84,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }}
           tags: | 
             ${{ steps.meta.outputs.tags }}
             ${{ vars.DOCKERHUB_IMAGENAME }}:latest
