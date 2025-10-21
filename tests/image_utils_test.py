@@ -10,8 +10,13 @@ testdata = [
     (2, 10, 1, 5),
 ]
 
-@pytest.mark.parametrize("original_width, original_height, new_width, new_height", testdata)
-def test_image_dimensions_should_be_scaled_correctly_with_width(original_width, original_height, new_width, new_height):
+
+@pytest.mark.parametrize(
+    "original_width, original_height, new_width, new_height", testdata
+)
+def test_image_dimensions_should_be_scaled_correctly_with_width(
+    original_width, original_height, new_width, new_height
+):
     expected_height = new_height
 
     width, height = ImageProcessor.calculate_scaled_size(
@@ -21,8 +26,12 @@ def test_image_dimensions_should_be_scaled_correctly_with_width(original_width, 
     assert height == expected_height
 
 
-@pytest.mark.parametrize("original_width, original_height, new_width, new_height", testdata)
-def test_image_dimensions_should_be_scaled_correctly_with_height(original_width, original_height, new_width, new_height):
+@pytest.mark.parametrize(
+    "original_width, original_height, new_width, new_height", testdata
+)
+def test_image_dimensions_should_be_scaled_correctly_with_height(
+    original_width, original_height, new_width, new_height
+):
     expected_width = new_width
 
     width, height = ImageProcessor.calculate_scaled_size(
@@ -34,8 +43,12 @@ def test_image_dimensions_should_be_scaled_correctly_with_height(original_width,
     assert height == new_height
 
 
-@pytest.mark.parametrize("original_width, original_height, new_width, new_height", testdata)
-def test_image_dimensions_should_be_scaled_correctly_with_all_params(original_width, original_height, new_width, new_height):
+@pytest.mark.parametrize(
+    "original_width, original_height, new_width, new_height", testdata
+)
+def test_image_dimensions_should_be_scaled_correctly_with_all_params(
+    original_width, original_height, new_width, new_height
+):
     width, height = ImageProcessor.calculate_scaled_size(
         original_width=original_width,
         original_height=original_height,

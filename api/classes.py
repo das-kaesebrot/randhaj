@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from fastapi.responses import Response
 
+
 @dataclass
 class TemplateResolutionMetadata:
     current_width: int

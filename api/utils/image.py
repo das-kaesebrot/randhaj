@@ -23,24 +23,26 @@ class ImageProcessor:
         width: Union[int, None] = None,
         height: Union[int, None] = None,
         keep_aspect_ratio: bool = True,
-        legacy_mode = False,
+        legacy_mode=False,
     ) -> Image.Image:
         if not width and not height:
             return image  # nothing to do
-        
+
         if keep_aspect_ratio and not legacy_mode:
-            width, height = cls.calculate_scaled_size(image.width, image.height, width=width)
+            width, height = cls.calculate_scaled_size(
+                image.width, image.height, width=width
+            )
         elif not width and height:
             width = height
         elif width and not height:
             height = width
-        
+
         if legacy_mode:
             new_image = image
             new_image.thumbnail((width, height))
-            
+
             return new_image
-            
+
         new_image = image.resize((width, height), Image.Resampling.LANCZOS)
         new_image.format = image.format
 
@@ -87,14 +89,14 @@ class ImageProcessor:
         ImageOps.exif_transpose(rgb_image, in_place=True)
 
         max_size = MAX_SIZE
-        
+
         os.makedirs(output_path, exist_ok=True)
 
         id = cls.get_id(data=rgb_image)
-        
+
         # resize after calculating image ID
         rgb_image = cls.resize(rgb_image, max_size, max_size)
-        
+
         filename = os.path.join(
             output_path,
             FilenameUtils.get_filename(

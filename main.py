@@ -21,7 +21,9 @@ cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
 site_title = os.getenv(f"{ENV_PREFIX}_SITE_TITLE", "Random image")
 site_emoji = os.getenv(f"{ENV_PREFIX}_SITE_EMOJI", "🦈")
 default_card_image_id = os.getenv(f"{ENV_PREFIX}_DEFAULT_CARD_IMAGE")
-max_initial_cache_generator_workers = int(os.getenv(f"{ENV_PREFIX}_MAX_INITIAL_CACHE_GENERATOR_WORKERS", 4))
+max_initial_cache_generator_workers = int(
+    os.getenv(f"{ENV_PREFIX}_MAX_INITIAL_CACHE_GENERATOR_WORKERS", 4)
+)
 loglevel = os.getenv(
     f"{ENV_PREFIX}_LOG_LEVEL", os.getenv("UVICORN_LOG_LEVEL", logging.INFO)
 )
@@ -40,7 +42,11 @@ templates = Jinja2Templates(directory="resources/templates")
 api_router = APIRouter(tags=["api"])
 view_router = APIRouter(tags=["view"], default_response_class=HTMLResponse)
 
-cache = Cache(image_dir=source_image_dir, cache_dir=cache_dir, max_initial_cache_generator_workers=max_initial_cache_generator_workers)
+cache = Cache(
+    image_dir=source_image_dir,
+    cache_dir=cache_dir,
+    max_initial_cache_generator_workers=max_initial_cache_generator_workers,
+)
 
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
@@ -73,9 +79,9 @@ def get_file_response(
             original_height=metadata.original_height,
             width=width,
         )
-        if not height in Constants.ALLOWED_DIMENSIONS:
+        if height not in Constants.ALLOWED_DIMENSIONS:
             raise HTTPException(
-                status_code=400, detail=f"Width is not of allowed value!"
+                status_code=400, detail="Width is not of allowed value!"
             )
 
     if not width and height and height not in Constants.ALLOWED_DIMENSIONS:
@@ -85,14 +91,12 @@ def get_file_response(
             height=height,
         )
 
-        if not width in Constants.ALLOWED_DIMENSIONS:
+        if width not in Constants.ALLOWED_DIMENSIONS:
             raise HTTPException(
-                status_code=400, detail=f"Height is not of allowed value!"
+                status_code=400, detail="Height is not of allowed value!"
             )
 
-    filename = cache.get_filename(
-        image_id, width=width, height=height, square=square
-    )
+    filename = cache.get_filename(image_id, width=width, height=height, square=square)
 
     headers = {
         "Content-Disposition": (
@@ -194,27 +198,28 @@ def get_image_page_response(
             "nav_page": "image",
         },
     )
-    
+
+
 def get_gallery_page_response(
-    request: Request, page: int = 1, page_size = 50,
+    request: Request,
+    page: int = 1,
+    page_size=50,
 ) -> HTMLResponse:
     if page < 1:
-        raise HTTPException(
-            status_code=400, detail=f"Page can't be smaller than 1!"
-        )
-        
+        raise HTTPException(status_code=400, detail="Page can't be smaller than 1!")
+
     if page_size > 50:
         raise HTTPException(
-            status_code=400, detail=f"Page size can't be bigger than 50!"
-        )        
-    
+            status_code=400, detail="Page size can't be bigger than 50!"
+        )
+
     page_max = (cache.get_total_image_count() // page_size) + 1
     if page > page_max:
         raise HTTPException(
             status_code=400, detail=f"Page can't be bigger than {page_max}!"
-        )        
-        
-    ids = cache.get_ids_paged(page = page - 1, page_size = page_size)
+        )
+
+    ids = cache.get_ids_paged(page=page - 1, page_size=page_size)
     current_width = Constants.get_small_thumbnail_width()
 
     return templates.TemplateResponse(
@@ -236,7 +241,6 @@ def get_gallery_page_response(
     )
 
 
-
 @view_router.get("/favicon.ico", response_class=FaviconResponse)
 async def get_favicon():
     return (
@@ -251,13 +255,16 @@ async def page_redirect_rand_image(request: Request):
     image_id = cache.get_random_id()
     return get_image_page_response(request, image_id)
 
+
 @view_router.get("/gallery", response_class=HTMLResponse)
 async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50):
     return get_gallery_page_response(request, page, page_size)
 
+
 @view_router.get("/{image_id}", response_class=HTMLResponse)
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
+
 
 @api_router.get("/img/{image_id}")
 async def api_get_image(

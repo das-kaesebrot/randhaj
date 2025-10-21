@@ -1,7 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
-import random
 from threading import Thread, Lock
 import inotify.adapters
 import inotify.constants
@@ -33,7 +32,15 @@ class Cache:
     __engine: Engine = None
     __session = None
 
-    def __init__(self, *, image_dir: str, cache_dir: str, enable_inotify: bool = True, max_initial_cache_generator_workers: int = 4, connection_string: str = "sqlite:///"):
+    def __init__(
+        self,
+        *,
+        image_dir: str,
+        cache_dir: str,
+        enable_inotify: bool = True,
+        max_initial_cache_generator_workers: int = 4,
+        connection_string: str = "sqlite:///",
+    ):
         image_dir = os.path.abspath(image_dir)
         cache_dir = os.path.abspath(cache_dir)
 
@@ -43,16 +50,20 @@ class Cache:
         )
         self._cache_dir = cache_dir
         self._image_dir = image_dir
-        
-        self._logger.info(f"Creating database engine with connection string '{connection_string}'")
-        
+
+        self._logger.info(
+            f"Creating database engine with connection string '{connection_string}'"
+        )
+
         # only echo SQL statements if we're logging at the debug level
         echo = self._logger.getEffectiveLevel() <= logging.DEBUG
-        
-        self.__engine = create_engine(connection_string, echo=echo, connect_args={'check_same_thread': False})
+
+        self.__engine = create_engine(
+            connection_string, echo=echo, connect_args={"check_same_thread": False}
+        )
         Base.metadata.create_all(self.__engine)
         self.__session = Session(self.__engine)
-        
+
         assert self.__engine is not None
         assert self.__session is not None
 
@@ -63,45 +74,47 @@ class Cache:
 
     def _generate_cache(self, max_threadpool_workers: int):
         start = perf_counter()
-        
+
         def convert_and_save(filename: str):
             self._logger.debug(f"Started conversion job for '{filename}'")
-            try:                
-                with Image.open(os.path.join(self._image_dir, filename)) as image:                
+            try:
+                with Image.open(os.path.join(self._image_dir, filename)) as image:
                     id, metadata = (
                         ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
                             output_path=self._cache_dir, image=image
                         )
                     )
                     ThreadingUtils.wait_and_acquire_lock(self._mutex_lock)
-                    cached_image = CachedImage(id = id, original_filename = filename, image_metadata = metadata)
+                    cached_image = CachedImage(
+                        id=id, original_filename=filename, image_metadata=metadata
+                    )
                     self.__session.add(cached_image)
                     self._mutex_lock.release()
                     self._logger.debug(f"Done converting '{filename}'")
-            except OSError as e:
-                self._logger.exception(
-                    f"Failed converting '{filename}'"
-                )
-        
+            except OSError:
+                self._logger.exception(f"Failed converting '{filename}'")
+
         with ThreadPoolExecutor(max_workers=max_threadpool_workers) as executor:
-            self._logger.info(f"Created initial generation threadpool with {executor._max_workers} workers")
+            self._logger.info(
+                f"Created initial generation threadpool with {executor._max_workers} workers"
+            )
             for filename in os.listdir(self._image_dir):
                 if (
-                    not os.path.splitext(filename.lower())[1]
-                    in Constants.ALLOWED_INPUT_FILE_EXTENSIONS
+                    os.path.splitext(filename.lower())[1]
+                    not in Constants.ALLOWED_INPUT_FILE_EXTENSIONS
                 ):
                     self._logger.warning(
                         f"Ignoring file '{filename}' because it doesn't have an allowed file extension"
                     )
                     continue
-                
+
                 executor.submit(convert_and_save, filename=filename)
-                
+
         self._commit_and_flush()
-                
+
         end = perf_counter()
         self._logger.info(
-            f"Generated {self.get_total_image_count()} cached images in {timedelta(seconds=end-start)}"
+            f"Generated {self.get_total_image_count()} cached images in {timedelta(seconds=end - start)}"
         )
 
     def _dispatch_inotify_thread(self):
@@ -132,8 +145,8 @@ class Cache:
                     logger.info(f"Detected new file '{filename}', adjusting cache")
 
                     if (
-                        not os.path.splitext(filename.lower())[1]
-                        in Constants.ALLOWED_INPUT_FILE_EXTENSIONS
+                        os.path.splitext(filename.lower())[1]
+                        not in Constants.ALLOWED_INPUT_FILE_EXTENSIONS
                     ):
                         logger.warning(
                             f"Ignoring file '{filename}' because it doesn't have an allowed file extension"
@@ -143,7 +156,7 @@ class Cache:
                     image: Image.Image = None
                     try:
                         image = Image.open(os.path.join(self._image_dir, filename))
-                    except OSError as e:
+                    except OSError:
                         logger.exception("Exception while opening file")
                         continue
 
@@ -154,9 +167,11 @@ class Cache:
                                 output_path=self._cache_dir, image=image
                             )
                         )
-                        cached_image = CachedImage(id = id, original_filename = filename, image_metadata = metadata)
+                        cached_image = CachedImage(
+                            id=id, original_filename=filename, image_metadata=metadata
+                        )
                         self.__session.add(cached_image)
-                    except OSError as e:
+                    except OSError:
                         logger.exception("Exception while converting file")
                         continue
                     finally:
@@ -197,10 +212,11 @@ class Cache:
                 width=width,
                 height=height,
             )
-        
-            width, height = GeneralUtils.clamp(
-                width, 0, metadata.original_width
-            ), GeneralUtils.clamp(height, 0, metadata.original_height)
+
+            width, height = (
+                GeneralUtils.clamp(width, 0, metadata.original_width),
+                GeneralUtils.clamp(height, 0, metadata.original_height),
+            )
 
         expected_filename = os.path.join(
             self._cache_dir,
@@ -221,24 +237,22 @@ class Cache:
                 format=metadata.format,
             ),
         )
-        filename = (
-            ImageProcessor.write_scaled_copy_from_source_filename_to_filesystem(
-                id=id,
-                source_filename=source_filename,
-                output_path=self._cache_dir,
-                width=width,
-                height=height,
-                crop_square=square,
-            )
+        filename = ImageProcessor.write_scaled_copy_from_source_filename_to_filesystem(
+            id=id,
+            source_filename=source_filename,
+            output_path=self._cache_dir,
+            width=width,
+            height=height,
+            crop_square=square,
         )
 
         return filename
-    
+
     @wait_lock(_mutex_lock)
     def get_random_id(self) -> str:
         select_statement = select(CachedImage.id).order_by(func.random()).limit(1)
         return self.__session.scalars(select_statement).one_or_none()
-    
+
     @wait_lock(_mutex_lock)
     def get_metadata(self, id: str) -> Union[ImageMetadata, None]:
         select_statement = select(ImageMetadata).where(ImageMetadata.id.is_(id))
@@ -253,32 +267,39 @@ class Cache:
     def get_first_id(self) -> str:
         select_statement = select(CachedImage.id).order_by(CachedImage.id).limit(1)
         return self.__session.scalars(select_statement).one_or_none()
-    
+
     @wait_lock(_mutex_lock)
     def get_all_ids(self) -> list[str]:
         select_statement = select(CachedImage.id)
         return self.__session.scalars(select_statement).all()
-    
+
     @wait_lock(_mutex_lock)
     def get_ids_paged(self, page: int = 0, page_size: int = 50) -> list[str]:
-        select_statement = select(CachedImage.id).order_by(CachedImage.id).offset(page * page_size).limit(page_size)
+        select_statement = (
+            select(CachedImage.id)
+            .order_by(CachedImage.id)
+            .offset(page * page_size)
+            .limit(page_size)
+        )
         return self.__session.scalars(select_statement).all()
-    
+
     @wait_lock(_mutex_lock)
     def get_all_images(self) -> list[CachedImage]:
         select_statement = select(CachedImage)
         return self.__session.scalars(select_statement).all()
-    
+
     @wait_lock(_mutex_lock)
     def _delete_by_original_filename(self, original_filename: str):
-        delete_statement = delete(CachedImage).where(CachedImage.original_filename.is_(original_filename))
+        delete_statement = delete(CachedImage).where(
+            CachedImage.original_filename.is_(original_filename)
+        )
         self.__session.execute(delete_statement)
         self._commit_and_flush()
-    
+
     def _commit_and_flush(self):
         self.__session.commit()
         self.__session.flush()
-        
+
     @wait_lock(_mutex_lock)
     def get_total_image_count(self) -> int:
         select_statement = select(func.count()).select_from(CachedImage)
