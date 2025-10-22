@@ -3,6 +3,7 @@
     {%- block head -%}
     <script src="{{ url_for('static_external', path='/bootstrap/1756173047/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static_external', path='/bootstrap/1756173047/bootstrap.min.css') }}">
+    {#<link rel="stylesheet" href="{{ url_for('static_external', path='/bootstrap-icons/1746831490/bootstrap-icons.min.css') }}">#}
     <link rel="shortcut icon" href="{{ url_for('get_favicon') }}">
     <title>{% block title %}{{ site_title }}{%- if is_direct_request %} | {{ image_id }}{% endif %}{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
