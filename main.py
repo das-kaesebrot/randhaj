@@ -4,16 +4,17 @@ from typing import Union
 import crawleruseragents
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from kaesebrot_commons.logging.utils import LoggingUtils
 
 from api.cache import Cache
-from api.classes import FaviconResponse, ResolutionVariant, TemplateResolutionMetadata
+from api.classes import FaviconResponse, ResolutionVariant, StaticFilesCustomHeaders, TemplateResolutionMetadata
 from api.utils.image import ImageProcessor
 from api.constants import Constants
 
 ENV_PREFIX = "RANDHAJ"
+
+STATIC_EXTERNAL_CACHING_TIME = 365 * 24 * 60 * 60 # 365 days in seconds
 
 version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
@@ -36,7 +37,7 @@ for name in logging.root.manager.loggerDict.keys():
 
 
 app = FastAPI(title=site_title, version=version)
-app.mount("/static", StaticFiles(directory="resources/static"), name="static")
+app.mount("/static/dist", StaticFilesCustomHeaders(directory="resources/static", headers={"Cache-Control": f"public, max-age={STATIC_EXTERNAL_CACHING_TIME}, s-maxage={STATIC_EXTERNAL_CACHING_TIME}, immutable"}), name="static_external")
 templates = Jinja2Templates(directory="resources/templates")
 
 api_router = APIRouter(tags=["api"])
