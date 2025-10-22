@@ -15,6 +15,7 @@ from api.constants import Constants
 ENV_PREFIX = "RANDHAJ"
 
 STATIC_EXTERNAL_CACHING_TIME = 365 * 24 * 60 * 60 # 365 days in seconds
+IMAGE_FILES_CACHING_TIME = 30 * 24 * 60 * 60 # 30 days in seconds
 
 version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
@@ -109,7 +110,7 @@ def get_file_response(
     }
 
     if set_cache_header:
-        headers["Cache-Control"] = "max-age=2592000, public, no-transform"
+        headers["Cache-Control"] = f"max-age={IMAGE_FILES_CACHING_TIME}, s-maxage={IMAGE_FILES_CACHING_TIME}, public, no-transform, immutable"
 
     return FileResponse(
         path=filename,
