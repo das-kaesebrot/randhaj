@@ -68,7 +68,7 @@
                 {% elif page_num >= page_max - pagebar_page_item_limit %}
                 <a href="{{ url_for('page_get_gallery').include_query_params(page=1, page_size=page_size) }}" class="btn btn-outlined{% if 1 == page_num %} active" aria-current="page{% endif %}">{{ 1 }}</a>
                 <div class="btn">...</div>
-                {% for page in range(page_max - pagebar_page_item_limit, page_max + 1) %}
+                {% for page in range(page_max - pagebar_page_item_limit + 1, page_max + 1) %}
                 <a href="{{ url_for('page_get_gallery').include_query_params(page=page, page_size=page_size) }}" class="btn btn-outlined{% if page == page_num %} active" aria-current="page{% endif %}">{{ page }}</a>
                 {% endfor %}
                 {% else %}
