@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from typing import Union
 import crawleruseragents
 from fastapi import APIRouter, FastAPI, HTTPException, Request
@@ -67,6 +68,19 @@ cache = Cache(
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
 
+def ns_to_duration_str(ns: int) -> str:
+    unit_prefix = ["n", "μ", "m", "", "k", "M", "G"]
+    duration = ns
+    iteration = 0
+    
+    while duration >= 1000:
+        duration /= 1000
+        iteration += 1
+        
+        if iteration >= len(unit_prefix) - 1:
+            iteration = len(unit_prefix) - 1
+    
+    return f"{duration:.2f} {unit_prefix[iteration]}s"
 
 def get_file_response(
     *,
@@ -138,6 +152,7 @@ def get_file_response(
 def get_image_page_response(
     request: Request, image_id: str, is_direct_request: bool = False
 ) -> HTMLResponse:
+    start = time.perf_counter_ns()
     if not cache.id_exists(image_id):
         raise HTTPException(
             status_code=404, detail=f"Image with id='{image_id}' could not be found!"
@@ -214,6 +229,7 @@ def get_image_page_response(
             "default_card_image_id": default_card_image_id,
             "thumbnail_width": Constants.get_small_thumbnail_width(),
             "nav_page": "image",
+            "request_duration": ns_to_duration_str(time.perf_counter_ns() - start),
         },
     )
 
@@ -223,6 +239,7 @@ def get_gallery_page_response(
     page: int = 1,
     page_size=50,
 ) -> HTMLResponse:
+    start = time.perf_counter_ns()
     if page < 1:
         raise HTTPException(status_code=400, detail="Page can't be smaller than 1!")
 
@@ -255,6 +272,7 @@ def get_gallery_page_response(
             "page_max": page_max,
             "page_size": page_size,
             "nav_page": "gallery",
+            "request_duration": ns_to_duration_str(time.perf_counter_ns() - start),
         },
     )
 

@@ -34,7 +34,7 @@
 <footer class="pt-2 mt-2 text-center text-body-secondary fw-light">
     {% include "custom/footer.html" ignore missing %}
     {% block footer %}
-    <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code></p>
+    <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code>{% if request_duration %} ({{ request_duration }}){% endif %}</p>
     {% endblock footer %}
 </footer>
 {% endblock body %}
