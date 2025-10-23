@@ -68,19 +68,21 @@ cache = Cache(
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
 
+
 def ns_to_duration_str(ns: int) -> str:
     unit_prefix = ["n", "μ", "m", "", "k", "M", "G"]
     duration = ns
     iteration = 0
-    
+
     while duration >= 1000:
         duration /= 1000
         iteration += 1
-        
+
         if iteration >= len(unit_prefix) - 1:
             iteration = len(unit_prefix) - 1
-    
+
     return f"{duration:.2f} {unit_prefix[iteration]}s"
+
 
 def get_file_response(
     *,
