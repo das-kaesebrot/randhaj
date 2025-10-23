@@ -66,6 +66,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PAT }}
+        
+      - name: Set short git commit ref
+        id: vars
+        run: |
+          calculated_sha=$(git rev-parse --short ${{ github.sha }})
+          echo "COMMIT_SHORT_SHA=$calculated_sha-${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -79,6 +85,7 @@ jobs:
             type=sha
             type=ref,event=pr
             type=ref,event=branch
+            type=raw,value=${{ env.COMMIT_SHORT_SHA }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
