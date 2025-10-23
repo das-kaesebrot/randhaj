@@ -338,5 +338,10 @@ async def api_get_rand_image(
     )
 
 
+@api_router.get("/health")
+async def api_get_health():
+    return {"status": "healthy"}
+
+
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(view_router)
