@@ -58,7 +58,15 @@ tags_metadata = [
     },
 ]
 
-app = FastAPI(title=site_title, version=version, license_info={"name": "GPL-2.0", "url": "https://github.com/das-kaesebrot/randhaj/blob/main/LICENSE"}, openapi_tags=tags_metadata)
+app = FastAPI(
+    title=site_title,
+    version=version,
+    license_info={
+        "name": "GPL-2.0",
+        "url": "https://github.com/das-kaesebrot/randhaj/blob/main/LICENSE",
+    },
+    openapi_tags=tags_metadata,
+)
 app.mount(
     "/static/dist",
     StaticFilesCustomHeaders(
@@ -254,7 +262,7 @@ def get_image_page_response(
 def get_gallery_page_response(
     request: Request,
     page: int = 1,
-    page_size = VIEW_PAGE_SIZE_LIMIT,
+    page_size=VIEW_PAGE_SIZE_LIMIT,
 ) -> HTMLResponse:
     start = time.perf_counter_ns()
     if page < 1:
@@ -262,7 +270,8 @@ def get_gallery_page_response(
 
     if page_size > VIEW_PAGE_SIZE_LIMIT:
         raise HTTPException(
-            status_code=400, detail=f"Page size can't be bigger than {VIEW_PAGE_SIZE_LIMIT}!"
+            status_code=400,
+            detail=f"Page size can't be bigger than {VIEW_PAGE_SIZE_LIMIT}!",
         )
 
     page_max = (cache.get_total_image_count() // page_size) + 1
@@ -294,7 +303,9 @@ def get_gallery_page_response(
     )
 
 
-@view_router.get("/favicon.ico", summary="Returns the favicon", response_class=FaviconResponse)
+@view_router.get(
+    "/favicon.ico", summary="Returns the favicon", response_class=FaviconResponse
+)
 async def get_favicon():
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
@@ -303,23 +314,35 @@ async def get_favicon():
     )
 
 
-@view_router.get("/", summary="Returns the page for a random image", response_class=HTMLResponse)
+@view_router.get(
+    "/", summary="Returns the page for a random image", response_class=HTMLResponse
+)
 async def page_redirect_rand_image(request: Request):
     image_id = cache.get_random_id()
     return get_image_page_response(request, image_id)
 
 
-@view_router.get("/gallery", summary="Returns the specified gallery page. Page starts at 1.", response_class=HTMLResponse)
+@view_router.get(
+    "/gallery",
+    summary="Returns the specified gallery page. Page starts at 1.",
+    response_class=HTMLResponse,
+)
 async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50):
     return get_gallery_page_response(request, page, page_size)
 
 
-@view_router.get("/{image_id}", summary="Returns the page for the image associated with the specified ID", response_class=HTMLResponse)
+@view_router.get(
+    "/{image_id}",
+    summary="Returns the page for the image associated with the specified ID",
+    response_class=HTMLResponse,
+)
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
 
 
-@api_router.get("/img/random", summary="Returns a random image", response_class=FileResponse)
+@api_router.get(
+    "/img/random", summary="Returns a random image", response_class=FileResponse
+)
 async def api_get_rand_image(
     width: Union[int, None] = None,
     height: Union[int, None] = None,
@@ -335,7 +358,11 @@ async def api_get_rand_image(
     )
 
 
-@api_router.get("/img/{image_id}", summary="Returns the image associated with the specified ID", response_class=FileResponse)
+@api_router.get(
+    "/img/{image_id}",
+    summary="Returns the image associated with the specified ID",
+    response_class=FileResponse,
+)
 async def api_get_image(
     image_id: str,
     width: Union[int, None] = None,
@@ -354,16 +381,23 @@ async def api_get_image(
         square=square,
     )
 
-@api_router.get("/img", summary="Returns a model containing a page of image IDs starting at the specified offset")
+
+@api_router.get(
+    "/img",
+    summary="Returns a model containing a page of image IDs starting at the specified offset",
+)
 async def api_get_image_ids_paged(
     offset: int = 0,
     page_size: int = API_PAGE_SIZE_LIMIT,
 ) -> ImagePageResponse:
     if page_size > API_PAGE_SIZE_LIMIT:
         raise HTTPException(
-            status_code=400, detail=f"Page size can't be bigger than {API_PAGE_SIZE_LIMIT}!"
+            status_code=400,
+            detail=f"Page size can't be bigger than {API_PAGE_SIZE_LIMIT}!",
         )
-    return ImagePageResponse(offset=offset, ids=cache.get_ids_paged_with_offset(offset, page_size))
+    return ImagePageResponse(
+        offset=offset, ids=cache.get_ids_paged_with_offset(offset, page_size)
+    )
 
 
 @api_router.get("/health", summary="Returns service health")
