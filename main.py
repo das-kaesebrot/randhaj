@@ -11,6 +11,8 @@ from kaesebrot_commons.logging.utils import LoggingUtils
 from api.cache import Cache
 from api.classes import (
     FaviconResponse,
+    HealthCheckResponse,
+    ImagePageResponse,
     ResolutionVariant,
     StaticFilesCustomHeaders,
     TemplateResolutionMetadata,
@@ -22,6 +24,9 @@ ENV_PREFIX = "RANDHAJ"
 
 STATIC_EXTERNAL_CACHING_TIME = 365 * 24 * 60 * 60  # 365 days in seconds
 IMAGE_FILES_CACHING_TIME = 30 * 24 * 60 * 60  # 30 days in seconds
+
+API_PAGE_SIZE_LIMIT = 200
+VIEW_PAGE_SIZE_LIMIT = 50
 
 version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
@@ -249,15 +254,15 @@ def get_image_page_response(
 def get_gallery_page_response(
     request: Request,
     page: int = 1,
-    page_size=50,
+    page_size = VIEW_PAGE_SIZE_LIMIT,
 ) -> HTMLResponse:
     start = time.perf_counter_ns()
     if page < 1:
         raise HTTPException(status_code=400, detail="Page can't be smaller than 1!")
 
-    if page_size > 50:
+    if page_size > VIEW_PAGE_SIZE_LIMIT:
         raise HTTPException(
-            status_code=400, detail="Page size can't be bigger than 50!"
+            status_code=400, detail=f"Page size can't be bigger than {VIEW_PAGE_SIZE_LIMIT}!"
         )
 
     page_max = (cache.get_total_image_count() // page_size) + 1
@@ -349,10 +354,21 @@ async def api_get_rand_image(
         set_cache_header=False,
     )
 
+@api_router.get("/img", summary="Returns a model containing a page of image IDs starting at the specified offset")
+async def api_get_image_ids_paged(
+    offset: int = 0,
+    page_size: int = API_PAGE_SIZE_LIMIT,
+) -> ImagePageResponse:
+    if page_size > API_PAGE_SIZE_LIMIT:
+        raise HTTPException(
+            status_code=400, detail=f"Page size can't be bigger than {API_PAGE_SIZE_LIMIT}!"
+        )
+    return ImagePageResponse(offset=offset, ids=cache.get_ids_paged_with_offset(offset, page_size))
 
-@api_router.get("/health")
-async def api_get_health():
-    return {"status": "healthy"}
+
+@api_router.get("/health", summary="Returns service health")
+async def api_get_health() -> HealthCheckResponse:
+    return HealthCheckResponse()
 
 
 app.include_router(api_router, prefix="/api/v1")

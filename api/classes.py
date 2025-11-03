@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 
 @dataclass
@@ -21,7 +22,13 @@ class ResolutionVariant:
 class FaviconResponse(Response):
     media_type = "image/svg+xml"
 
-
+class HealthCheckResponse(BaseModel):
+    status: str = "healthy"
+    
+class ImagePageResponse(BaseModel):
+    offset: int = 0
+    ids: list[str] = []
+    
 # https://stackoverflow.com/a/77823873
 class StaticFilesCustomHeaders(StaticFiles):
     def __init__(
