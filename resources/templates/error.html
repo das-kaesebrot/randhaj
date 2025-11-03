@@ -1,0 +1,66 @@
+{% extends "content-base.html" %}
+
+{% block opengraph_title %}{{ http_status.value }} {{ http_status.phrase }}{% endblock opengraph_title %}
+{% block title %}{{ site_title }} | {{ http_status.value }} {{ http_status.phrase }}{% endblock title %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        @media only screen and (max-width: 768px) {
+            .btn {
+                width:100%;
+            }
+
+            #image {
+                max-width: 100%;
+                max-height: 50vh;
+            }
+        }
+
+        body {
+            background-image:
+            linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+                linear-gradient(45deg,rgba(91, 206, 250, 0.2) 0%, rgba(245, 169, 184, 0.8) 100%),
+                linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
+                url({{ url_for('api_get_image', image_id=default_card_image_id).include_query_params(width=current_width) }});
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+        }
+
+        .svg-container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+
+            & svg {
+                margin: 0 auto;
+                display: block;
+            }
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+<div class="text-start">
+    <div class="alert alert-danger">
+        <h2>{{ http_status.value }} {{ http_status.phrase }}</h2>
+        <p><em>{{ http_status.description }}</em></p>
+        <p>
+            <b>Encountered while handling:</b></br>
+            {{ request.url }}</br>
+            <b>Detail:</b></br>
+            {{ exception.detail  }}</br>
+            {% if debug %}
+            <b>Stacktrace:</b></br>
+            <code>{{ traceback_str }}</code>
+            {% endif %}
+        </p>
+        <a href="javascript: history.go(-1)" class="alert-link">Go back</a>
+    </div>
+</div>
+{% endblock content %}

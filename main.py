@@ -1,11 +1,14 @@
 import logging
 import os
 import time
+import traceback
 from typing import Union
 import crawleruseragents
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.exception_handlers import http_exception_handler
+from http import HTTPStatus
 from kaesebrot_commons.logging.utils import LoggingUtils
 
 from api.cache import Cache
@@ -118,7 +121,7 @@ def get_file_response(
 ) -> FileResponse:
     if not cache.id_exists(image_id):
         raise HTTPException(
-            status_code=404, detail=f"File with id='{image_id}' could not be found!"
+            status_code=HTTPStatus.NOT_FOUND, detail=f"File with id='{image_id}' could not be found!"
         )
 
     metadata = cache.get_metadata(image_id)
@@ -136,7 +139,7 @@ def get_file_response(
         )
         if height not in Constants.ALLOWED_DIMENSIONS:
             raise HTTPException(
-                status_code=400, detail="Width is not of allowed value!"
+                status_code=HTTPStatus.BAD_REQUEST, detail="Width is not of allowed value!"
             )
 
     if not width and height and height not in Constants.ALLOWED_DIMENSIONS:
@@ -148,7 +151,7 @@ def get_file_response(
 
         if width not in Constants.ALLOWED_DIMENSIONS:
             raise HTTPException(
-                status_code=400, detail="Height is not of allowed value!"
+                status_code=HTTPStatus.BAD_REQUEST, detail="Height is not of allowed value!"
             )
 
     filename = cache.get_filename(image_id, width=width, height=height, square=square)
@@ -180,7 +183,7 @@ def get_image_page_response(
     start = time.perf_counter_ns()
     if not cache.id_exists(image_id):
         raise HTTPException(
-            status_code=404, detail=f"Image with id='{image_id}' could not be found!"
+            status_code=HTTPStatus.NOT_FOUND, detail=f"Image with id='{image_id}' could not be found!"
         )
 
     if crawleruseragents.is_crawler(user_agent=request.headers.get("user-agent")):
@@ -266,18 +269,18 @@ def get_gallery_page_response(
 ) -> HTMLResponse:
     start = time.perf_counter_ns()
     if page < 1:
-        raise HTTPException(status_code=400, detail="Page can't be smaller than 1!")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Page can't be smaller than 1!")
 
     if page_size > VIEW_PAGE_SIZE_LIMIT:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Page size can't be bigger than {VIEW_PAGE_SIZE_LIMIT}!",
         )
 
     page_max = (cache.get_total_image_count() // page_size) + 1
     if page > page_max:
         raise HTTPException(
-            status_code=400, detail=f"Page can't be bigger than {page_max}!"
+            status_code=HTTPStatus.BAD_REQUEST, detail=f"Page can't be bigger than {page_max}!"
         )
 
     ids = cache.get_ids_paged(page=page - 1, page_size=page_size)
@@ -339,7 +342,6 @@ async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50)
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
 
-
 @api_router.get(
     "/img/random", summary="Returns a random image", response_class=FileResponse
 )
@@ -392,7 +394,7 @@ async def api_get_image_ids_paged(
 ) -> ImagePageResponse:
     if page_size > API_PAGE_SIZE_LIMIT:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Page size can't be bigger than {API_PAGE_SIZE_LIMIT}!",
         )
     return ImagePageResponse(
@@ -407,3 +409,27 @@ async def api_get_health() -> HealthCheckResponse:
 
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(view_router)
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler_with_view_handling(request, exc: HTTPException):
+    if "view" in request.scope.get("route").tags:
+        http_status = HTTPStatus(exc.status_code)
+        traceback_str = "\n".join(traceback.format_exception(type(exc), value=exc, tb=exc.__traceback__))
+        return templates.TemplateResponse(
+            request=request,
+            name="error.html",
+            context={
+                "site_emoji": site_emoji,
+                "site_title": site_title,
+                "version": version,
+                "current_width": Constants.get_default_width(),
+                "default_card_image_id": default_card_image_id,
+                "http_status": http_status,
+                "exception": exc,
+                "traceback_str": traceback_str,
+                "request": request,
+            },
+            status_code=http_status,
+        )
+    
+    return await http_exception_handler(request, exc)
