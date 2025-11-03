@@ -42,8 +42,18 @@ for name in logging.root.manager.loggerDict.keys():
     logging.getLogger(name).handlers = []
     logging.getLogger(name).propagate = True
 
+tags_metadata = [
+    {
+        "name": "view",
+        "description": "Routes for the web UI. Always returns an HTML page.",
+    },
+    {
+        "name": "api",
+        "description": "REST API for retrieving images and service status. Depending on the route either `application/json` or `image/png` is returned.",
+    },
+]
 
-app = FastAPI(title=site_title, version=version)
+app = FastAPI(title=site_title, version=version, license_info={"name": "GPL-2.0", "url": "https://github.com/das-kaesebrot/randhaj/blob/main/LICENSE"}, openapi_tags=tags_metadata)
 app.mount(
     "/static/dist",
     StaticFilesCustomHeaders(
@@ -288,23 +298,23 @@ async def get_favicon():
     )
 
 
-@view_router.get("/", response_class=HTMLResponse)
+@view_router.get("/", summary="Returns the page for a random image", response_class=HTMLResponse)
 async def page_redirect_rand_image(request: Request):
     image_id = cache.get_random_id()
     return get_image_page_response(request, image_id)
 
 
-@view_router.get("/gallery", response_class=HTMLResponse)
+@view_router.get("/gallery", summary="Returns the specified gallery page. Page starts at 1.", response_class=HTMLResponse)
 async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50):
     return get_gallery_page_response(request, page, page_size)
 
 
-@view_router.get("/{image_id}", response_class=HTMLResponse)
+@view_router.get("/{image_id}", summary="Returns the page for the image associated with the specified ID", response_class=HTMLResponse)
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
 
 
-@api_router.get("/img/{image_id}")
+@api_router.get("/img/{image_id}", summary="Returns the image associated with the specified ID", response_class=FileResponse)
 async def api_get_image(
     image_id: str,
     width: Union[int, None] = None,
