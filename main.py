@@ -294,7 +294,7 @@ def get_gallery_page_response(
     )
 
 
-@view_router.get("/favicon.ico", response_class=FaviconResponse)
+@view_router.get("/favicon.ico", summary="Returns the favicon", response_class=FaviconResponse)
 async def get_favicon():
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
