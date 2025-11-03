@@ -319,6 +319,22 @@ async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
 
 
+@api_router.get("/img/random", summary="Returns a random image", response_class=FileResponse)
+async def api_get_rand_image(
+    width: Union[int, None] = None,
+    height: Union[int, None] = None,
+    download: bool = False,
+) -> FileResponse:
+    image_id = cache.get_random_id()
+    return get_file_response(
+        image_id=image_id,
+        width=width,
+        height=height,
+        download=download,
+        set_cache_header=False,
+    )
+
+
 @api_router.get("/img/{image_id}", summary="Returns the image associated with the specified ID", response_class=FileResponse)
 async def api_get_image(
     image_id: str,
@@ -336,22 +352,6 @@ async def api_get_image(
         height=height,
         download=download,
         square=square,
-    )
-
-
-@api_router.get("/img")
-async def api_get_rand_image(
-    width: Union[int, None] = None,
-    height: Union[int, None] = None,
-    download: bool = False,
-):
-    image_id = cache.get_random_id()
-    return get_file_response(
-        image_id=image_id,
-        width=width,
-        height=height,
-        download=download,
-        set_cache_header=False,
     )
 
 @api_router.get("/img", summary="Returns a model containing a page of image IDs starting at the specified offset")
