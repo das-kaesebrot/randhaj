@@ -16,6 +16,9 @@
         <li class="nav-item">
           <a class="nav-link{% if nav_page == "gallery" %} active" aria-current="page" href="#"{% else %}" href="{{ url_for('page_get_gallery') }}"{% endif %}>{% include 'svg/bi-images.svg' %} Gallery</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link{% if nav_page == "submit" %} active" aria-current="page" href="#"{% else %}" href="{{ url_for('page_get_submit') }}"{% endif %}>{% include 'svg/bi-file-earmark-arrow-up.svg' %} Submit</a>
+        </li>
       </ul>
       <div class="d-flex" role="search">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">

@@ -305,6 +305,24 @@ def get_gallery_page_response(
         },
     )
 
+def get_submit_page_response(
+    request: Request,
+) -> HTMLResponse:
+    start = time.perf_counter_ns()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="submit.html",
+        context={
+            "site_emoji": site_emoji,
+            "site_title": site_title,
+            "version": version,
+            "default_card_image_id": default_card_image_id,
+            "nav_page": "submit",
+            "request_duration": ns_to_duration_str(time.perf_counter_ns() - start),
+        },
+    )
+
 
 @view_router.get(
     "/favicon.ico", summary="Returns the favicon", response_class=FaviconResponse
@@ -332,6 +350,14 @@ async def page_redirect_rand_image(request: Request):
 )
 async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50):
     return get_gallery_page_response(request, page, page_size)
+
+@view_router.get(
+    "/submit",
+    summary="Returns the submissions page.",
+    response_class=HTMLResponse,
+)
+async def page_get_submit(request: Request):
+    return get_submit_page_response(request)
 
 
 @view_router.get(
