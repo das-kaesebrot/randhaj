@@ -34,10 +34,12 @@
 <div class="container-fluid text-center">
     {% block content %}{% endblock %}
 </div>
-<footer class="pt-2 mt-2 text-center text-body-secondary fw-light">
+<footer class="footer mt-auto py-3">
     {% include "custom/footer.html" ignore missing %}
     {% block footer %}
-    <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code>{% if request_duration %} ({{ request_duration }}){% endif %}</p>
+    <div class="container">
+      <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code>{% if request_duration %} ({{ request_duration }}){% endif %}</p>
+    </div>
     {% endblock footer %}
 </footer>
 {% endblock body %}
