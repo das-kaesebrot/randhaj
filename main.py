@@ -31,6 +31,9 @@ IMAGE_FILES_CACHING_TIME = 30 * 24 * 60 * 60  # 30 days in seconds
 API_PAGE_SIZE_LIMIT = 200
 VIEW_PAGE_SIZE_LIMIT = 50
 
+ALLOWED_MAX_UPLOAD_FILE_SIZE = 4 * 1024 * 1024
+ALLOWED_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg"]
+
 version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
 cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
@@ -383,7 +386,19 @@ async def page_get_submit(request: Request):
     response_class=HTMLResponse,
 )
 async def page_post_submit(request: Request, file: UploadFile):
-    return get_submit_page_response_for_upload(request)
+    if file.size > ALLOWED_MAX_UPLOAD_FILE_SIZE:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=f"Image size can't be bigger than {ALLOWED_MAX_UPLOAD_FILE_SIZE} byte!",
+        )    
+    
+    if file.content_type not in ALLOWED_UPLOAD_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=f"Image has to have a content type of {ALLOWED_UPLOAD_CONTENT_TYPES}",
+        )
+        
+    return "It works!"
 
 
 @view_router.get(
