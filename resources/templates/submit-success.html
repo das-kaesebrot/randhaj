@@ -43,14 +43,14 @@
             }
         }
     </style>
-    <meta http-equiv="refresh" content="5; url={{ url_for("page_redirect_rand_image") }}">
 {% endblock head %}
 
 {% block content %}
 <div class="text-start">
     <div class="alert alert-success">
         <h2>Success</h2>
-        <p>Your image was received successfully. Thank you! You will be redirected to <a href="{{ url_for("page_redirect_rand_image") }}">{{ url_for("page_redirect_rand_image") }}</a> in 5 seconds.</p>
+        <p>Your image was received successfully. Thank you! You may go back to <a href="{{ url_for("page_redirect_rand_image") }}">{{ url_for("page_redirect_rand_image") }}</a></p>
+        <p>The ID of your submitted image is: <code>{{ submitted_image_id }}</code></p>
     </div>
 </div>
 {% endblock content %}
