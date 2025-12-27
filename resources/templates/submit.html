@@ -46,22 +46,29 @@
 {% endblock head %}
 
 {% block content %}
-        <div class="container-sm">
-            <div class="row text-start">
+        <div class="container-sm text-start">
+            <div class="row">
                 <h2>Hello, on this page you may submit new images :)</h2>
-                Some information regarding your uploads:
-                <ul>
-                    <li>An image cannot be bigger than <strong>4 MiB</strong>.</li>
-                    <li>Only PNG and JPEG files are accepted.</li>
-                    <li>All EXIF data will be stripped after upload.</li>
-                    <li>At the moment, there is <strong>no implemented way</strong> to keep or display copyright metadata. Therefore, all submitted images are automatically considered to be licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/", target="_blank">CC0</a>.</li>
-                    <li>All submissions are reviewed manually before ending up on the page.</li>
+                <p>Some information regarding your uploads:</p>
+                <ul class="list-group">
+                    <li class="list-group-item">An image cannot be bigger than <strong>4 MiB</strong>.</li>
+                    <li class="list-group-item">Only PNG and JPEG files are accepted.</li>
+                    <li class="list-group-item">All EXIF data will be stripped after upload.</li>
+                    <li class="list-group-item">At the moment, there is <strong>no implemented way</strong> to keep or display copyright metadata. Therefore, all submitted images are automatically considered to be licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/", target="_blank">CC0</a>.</li>
+                    <li class="list-group-item">All submissions are reviewed manually before ending up on the page.</li>
                 </ul>
             </div>
             <div class="row">
-                <form class="row g-3" method="post" enctype="multipart/form-data">
+                <form class="row g-3 col-sm-5" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <input name="file" type="file" class="form-control" aria-label="file" accept=".jpg, .png, .jpeg" required>
+                        <input id="formFile" name="file" type="file" class="form-control" aria-label="file" accept=".jpg, .png, .jpeg" required>
+                        <label for="formFile" class="form-label">Please select a PNG or JPEG file to submit.</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="true" id="formCheckAccept" name="accept_conditions" required>
+                        <label class="form-check-label" for="formCheckAccept">
+                            I understand and accept the above conditions.
+                        </label>
                     </div>
                     <div class="mb-3">
                         <button class="btn btn-primary" type="submit">Submit</button>
