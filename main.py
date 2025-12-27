@@ -397,9 +397,18 @@ async def page_post_submit(request: Request, file: UploadFile):
             status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Image has to have a content type of {ALLOWED_UPLOAD_CONTENT_TYPES}",
         )
-        
-    return "It works!"
 
+    return templates.TemplateResponse(
+        request=request,
+        name="submit-success.html",
+        context={
+            "site_emoji": site_emoji,
+            "site_title": site_title,
+            "version": version,
+            "default_card_image_id": default_card_image_id,
+            "nav_page": "submit",
+        },
+    )
 
 @view_router.get(
     "/{image_id}",
