@@ -4,6 +4,7 @@ import time
 import traceback
 from typing import Union, Annotated
 import crawleruseragents
+import shutil
 from fastapi import APIRouter, FastAPI, HTTPException, Request, UploadFile, Form
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -12,6 +13,7 @@ from http import HTTPStatus
 from kaesebrot_commons.logging.utils import LoggingUtils
 from io import BytesIO
 from PIL import Image, UnidentifiedImageError
+from pathlib import Path
 
 from api.cache import Cache
 from api.classes import (
@@ -40,6 +42,7 @@ version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
 cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
 submissions_dir = os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR", "submissions")
+max_submissions_usage = float(os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DISK_USAGE_LIMIT", "0.9"))
 site_title = os.getenv(f"{ENV_PREFIX}_SITE_TITLE", "Random image")
 site_emoji = os.getenv(f"{ENV_PREFIX}_SITE_EMOJI", "🦈")
 default_card_image_id = os.getenv(f"{ENV_PREFIX}_DEFAULT_CARD_IMAGE")
@@ -405,6 +408,14 @@ async def page_post_submit(request: Request, file: UploadFile, accept_conditions
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Image has to have a content type of {ALLOWED_UPLOAD_CONTENT_TYPES}",
+        )
+    
+    total, used, free = shutil.disk_usage(Path(submissions_dir).absolute().as_posix())
+    used_amount = used / total    
+    if used_amount > max_submissions_usage:        
+        raise HTTPException(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            detail=f"Disk usage is above allowed amount!",
         )
     
     id = None
