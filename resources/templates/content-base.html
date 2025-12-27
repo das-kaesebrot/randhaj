@@ -16,6 +16,9 @@
         <li class="nav-item">
           <a class="nav-link{% if nav_page == "gallery" %} active" aria-current="page" href="#"{% else %}" href="{{ url_for('page_get_gallery') }}"{% endif %}>{% include 'svg/bi-images.svg' %} Gallery</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link{% if nav_page == "submit" %} active" aria-current="page" href="#"{% else %}" href="{{ url_for('page_get_submit') }}"{% endif %}>{% include 'svg/bi-file-earmark-arrow-up.svg' %} Submit</a>
+        </li>
       </ul>
       <div class="d-flex" role="search">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -31,10 +34,12 @@
 <div class="container-fluid text-center">
     {% block content %}{% endblock %}
 </div>
-<footer class="pt-2 mt-2 text-center text-body-secondary fw-light">
+<footer class="footer mt-auto py-3">
     {% include "custom/footer.html" ignore missing %}
     {% block footer %}
-    <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code>{% if request_duration %} ({{ request_duration }}){% endif %}</p>
+    <div class="container">
+      <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code>{% if request_duration %} ({{ request_duration }}){% endif %}</p>
+    </div>
     {% endblock footer %}
 </footer>
 {% endblock body %}

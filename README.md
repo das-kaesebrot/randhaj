@@ -15,6 +15,7 @@ A web service that displays a random image, made primarily to show random pictur
 - [x] optimized slim page responses for crawlers (return just Open Graph tags and the html header)
 - [x] gallery page
 - [x] pageable image API
+- [x] a submissions page
 - [ ] responsive page UI with focus on mobile usage
 - [ ] as few HTML/CSS/Javascript dependencies as possible
 
@@ -32,6 +33,8 @@ You may configure the web service via environment variables.
 | - | - | - | - |
 | `RANDHAJ_IMAGE_DIR` | Where to load the images to display from. Supperted file types: `jpg` and `png` | `assets/images` (in Docker: `/var/assets`) | No |
 | `RANDHAJ_CACHE_DIR` | Where to save the cached images (converted/resized) | `cache` | No |
+| `RANDHAJ_SUBMISSIONS_DIR` | Where to save the submitted images (converted/resized) | `submissions` | No |
+| `RANDHAJ_SUBMISSIONS_DIR_DISK_USAGE_LIMIT"` | Maximum disk usage, above which submissions are blocked (float value between 0.0 and 1.0) | `0.9` | No |
 | `RANDHAJ_SITE_TITLE` | The site title to use | `Random image` | No |
 | `RANDHAJ_SITE_EMOJI` | The site emoji (used for the favicon and title) | `🦈` | No |
 | `RANDHAJ_DEFAULT_CARD_IMAGE` | The image ID to use as the [Open Graph](https://ogp.me/) thumbnail for the root view (`/`) | The (alphabetically) first ID | No |
