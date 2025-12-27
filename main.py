@@ -10,6 +10,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.exception_handlers import http_exception_handler
 from http import HTTPStatus
 from kaesebrot_commons.logging.utils import LoggingUtils
+from io import BytesIO
+from PIL import Image, UnidentifiedImageError
 
 from api.cache import Cache
 from api.classes import (
@@ -37,6 +39,7 @@ ALLOWED_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg"]
 version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
 cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
+submissions_dir = os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR", "submissions")
 site_title = os.getenv(f"{ENV_PREFIX}_SITE_TITLE", "Random image")
 site_emoji = os.getenv(f"{ENV_PREFIX}_SITE_EMOJI", "🦈")
 default_card_image_id = os.getenv(f"{ENV_PREFIX}_DEFAULT_CARD_IMAGE")
@@ -396,12 +399,28 @@ async def page_post_submit(request: Request, file: UploadFile, accept_conditions
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Image size can't be bigger than {ALLOWED_MAX_UPLOAD_FILE_SIZE} byte!",
-        )    
+        )
     
     if file.content_type not in ALLOWED_UPLOAD_CONTENT_TYPES:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Image has to have a content type of {ALLOWED_UPLOAD_CONTENT_TYPES}",
+        )
+    
+    id = None
+    try:
+        await file.seek(0)
+        contents = BytesIO(await file.read())
+        with Image.open(contents) as image:
+                    id, metadata = (
+                        ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
+                            output_path=submissions_dir, image=image
+                        )
+                    )
+    except UnidentifiedImageError as e:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=f"Bad image! {e.strerror}",
         )
 
     return templates.TemplateResponse(
@@ -411,6 +430,7 @@ async def page_post_submit(request: Request, file: UploadFile, accept_conditions
             "site_emoji": site_emoji,
             "site_title": site_title,
             "version": version,
+            "submitted_image_id": id,
             "default_card_image_id": default_card_image_id,
             "nav_page": "submit",
         },

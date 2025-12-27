@@ -11,6 +11,7 @@ kaesebrot_commons = {git = "https://github.com/das-kaesebrot/python-commons.git"
 inotify = "~=0.2.12"
 crawler-user-agents = "*"
 sqlalchemy = "~=2.0.43"
+python-multipart = "~=0.0.21"
 
 [dev-packages]
 flake8 = "~=7.3.0"
