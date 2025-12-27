@@ -42,7 +42,9 @@ version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
 cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
 submissions_dir = os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR", "submissions")
-max_submissions_usage = float(os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR_DISK_USAGE_LIMIT", "0.9"))
+max_submissions_usage = float(
+    os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR_DISK_USAGE_LIMIT", "0.9")
+)
 site_title = os.getenv(f"{ENV_PREFIX}_SITE_TITLE", "Random image")
 site_emoji = os.getenv(f"{ENV_PREFIX}_SITE_EMOJI", "🦈")
 default_card_image_id = os.getenv(f"{ENV_PREFIX}_DEFAULT_CARD_IMAGE")
@@ -130,7 +132,8 @@ def get_file_response(
 ) -> FileResponse:
     if not cache.id_exists(image_id):
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail=f"File with id='{image_id}' could not be found!"
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=f"File with id='{image_id}' could not be found!",
         )
 
     metadata = cache.get_metadata(image_id)
@@ -148,7 +151,8 @@ def get_file_response(
         )
         if height not in Constants.ALLOWED_DIMENSIONS:
             raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST, detail="Width is not of allowed value!"
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail="Width is not of allowed value!",
             )
 
     if not width and height and height not in Constants.ALLOWED_DIMENSIONS:
@@ -160,7 +164,8 @@ def get_file_response(
 
         if width not in Constants.ALLOWED_DIMENSIONS:
             raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST, detail="Height is not of allowed value!"
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail="Height is not of allowed value!",
             )
 
     filename = cache.get_filename(image_id, width=width, height=height, square=square)
@@ -192,7 +197,8 @@ def get_image_page_response(
     start = time.perf_counter_ns()
     if not cache.id_exists(image_id):
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail=f"Image with id='{image_id}' could not be found!"
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=f"Image with id='{image_id}' could not be found!",
         )
 
     if crawleruseragents.is_crawler(user_agent=request.headers.get("user-agent")):
@@ -278,7 +284,9 @@ def get_gallery_page_response(
 ) -> HTMLResponse:
     start = time.perf_counter_ns()
     if page < 1:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Page can't be smaller than 1!")
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST, detail="Page can't be smaller than 1!"
+        )
 
     if page_size > VIEW_PAGE_SIZE_LIMIT:
         raise HTTPException(
@@ -289,7 +297,8 @@ def get_gallery_page_response(
     page_max = (cache.get_total_image_count() // page_size) + 1
     if page > page_max:
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST, detail=f"Page can't be bigger than {page_max}!"
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=f"Page can't be bigger than {page_max}!",
         )
 
     ids = cache.get_ids_paged(page=page - 1, page_size=page_size)
@@ -314,6 +323,7 @@ def get_gallery_page_response(
         },
     )
 
+
 def get_submit_page_response(
     request: Request,
 ) -> HTMLResponse:
@@ -331,6 +341,7 @@ def get_submit_page_response(
             "request_duration": ns_to_duration_str(time.perf_counter_ns() - start),
         },
     )
+
 
 def get_submit_page_response_for_upload(
     request: Request,
@@ -378,6 +389,7 @@ async def page_redirect_rand_image(request: Request):
 async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50):
     return get_gallery_page_response(request, page, page_size)
 
+
 @view_router.get(
     "/submit",
     summary="Returns the submissions page.",
@@ -386,48 +398,53 @@ async def page_get_gallery(request: Request, page: int = 1, page_size: int = 50)
 async def page_get_submit(request: Request):
     return get_submit_page_response(request)
 
+
 @view_router.post(
     "/submit",
     summary="Submits a new image.",
     response_class=HTMLResponse,
 )
-async def page_post_submit(request: Request, file: UploadFile, accept_conditions: Annotated[bool, Form()],):
+async def page_post_submit(
+    request: Request,
+    file: UploadFile,
+    accept_conditions: Annotated[bool, Form()],
+):
     if not accept_conditions:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail=f"I'm sorry, but you have to accept the conditions!",
         )
-    
+
     if file.size > ALLOWED_MAX_UPLOAD_FILE_SIZE:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Image size can't be bigger than {ALLOWED_MAX_UPLOAD_FILE_SIZE} byte!",
         )
-    
+
     if file.content_type not in ALLOWED_UPLOAD_CONTENT_TYPES:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail=f"Image has to have a content type of {ALLOWED_UPLOAD_CONTENT_TYPES}",
         )
-    
+
     total, used, free = shutil.disk_usage(Path(submissions_dir).absolute().as_posix())
-    used_amount = used / total    
-    if used_amount > max_submissions_usage:        
+    used_amount = used / total
+    if used_amount > max_submissions_usage:
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
             detail=f"Disk usage is above allowed amount!",
         )
-    
+
     id = None
     try:
         await file.seek(0)
         contents = BytesIO(await file.read())
         with Image.open(contents) as image:
-                    id, metadata = (
-                        ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
-                            output_path=submissions_dir, image=image
-                        )
-                    )
+            id, metadata = (
+                ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
+                    output_path=submissions_dir, image=image
+                )
+            )
     except UnidentifiedImageError as e:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -447,6 +464,7 @@ async def page_post_submit(request: Request, file: UploadFile, accept_conditions
         },
     )
 
+
 @view_router.get(
     "/{image_id}",
     summary="Returns the page for the image associated with the specified ID",
@@ -454,6 +472,7 @@ async def page_post_submit(request: Request, file: UploadFile, accept_conditions
 )
 async def page_get_image(request: Request, image_id: str):
     return get_image_page_response(request, image_id, is_direct_request=True)
+
 
 @api_router.get(
     "/img/random", summary="Returns a random image", response_class=FileResponse
@@ -523,11 +542,14 @@ async def api_get_health() -> HealthCheckResponse:
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(view_router)
 
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler_with_view_handling(request, exc: HTTPException):
     if "view" in request.scope.get("route").tags:
         http_status = HTTPStatus(exc.status_code)
-        traceback_str = "\n".join(traceback.format_exception(type(exc), value=exc, tb=exc.__traceback__))
+        traceback_str = "\n".join(
+            traceback.format_exception(type(exc), value=exc, tb=exc.__traceback__)
+        )
         return templates.TemplateResponse(
             request=request,
             name="error.html",
@@ -544,5 +566,5 @@ async def http_exception_handler_with_view_handling(request, exc: HTTPException)
             },
             status_code=http_status,
         )
-    
+
     return await http_exception_handler(request, exc)
