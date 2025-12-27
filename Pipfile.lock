@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3b01304db199f4a11d14e30f24d6baea38865b8f39d5c8e5aca904c6f124d9f2"
+            "sha256": "a2dc653cacb6dda132cda856b492b0cfd3683ba98466112c095249cbf083a4ca"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -66,10 +66,10 @@
         },
         "crawler-user-agents": {
             "hashes": [
-                "sha256:923b3ad78b2852034d4486e22dd56d038bd326b26f986c814f3311fe76d6023c"
+                "sha256:ca5cdab6786a15c26c50180b332db73a6505c608136ab4663e878895caa4fb14"
             ],
             "index": "pypi",
-            "version": "==1.22.0"
+            "version": "==1.24.0"
         },
         "dnspython": {
             "hashes": [
@@ -92,30 +92,30 @@
                 "standard"
             ],
             "hashes": [
-                "sha256:0e9422e8d6b797515f33f500309f6e1c98ee4e85563ba0f2debb282df6343763",
-                "sha256:6d1e703698443ccb89e50abe4893f3c84d9d6689c0cf1ca4fad6d3c15cf69f15"
+                "sha256:16b532691a33e2c5dee1dac32feb31dc6eb41a3dd4ff29a95f9487cb21c054c0",
+                "sha256:2570ec4f3aecf5cca8f0428aed2398b774fcdfee6c2116f86e80513f2f86a7a1"
             ],
-            "markers": "python_version >= '3.8'",
-            "version": "==0.124.4"
+            "markers": "python_version >= '3.9'",
+            "version": "==0.125.0"
         },
         "fastapi-cli": {
             "extras": [
                 "standard"
             ],
             "hashes": [
-                "sha256:addcb6d130b5b9c91adbbf3f2947fe115991495fdb442fe3e51b5fc6327df9f4",
-                "sha256:e8a2a1ecf7a4e062e3b2eec63ae34387d1e142d4849181d936b23c4bdfe29073"
+                "sha256:d17c2634f7b96b6b560bc16b0035ed047d523c912011395f49f00a421692bc3a",
+                "sha256:e58b6a0038c0b1532b7a0af690656093dee666201b6b19d3c87175b358e9f783"
             ],
-            "markers": "python_version >= '3.8'",
-            "version": "==0.0.16"
+            "markers": "python_version >= '3.9'",
+            "version": "==0.0.20"
         },
         "fastapi-cloud-cli": {
             "hashes": [
-                "sha256:8b025944475c3d53262105886dfe051f46383e4f287787a46892b524922ac0b6",
-                "sha256:9a152e80d08d465d4a6c4f5c75aa8871d1e8919f69ff131b0567f04e95d5f36c"
+                "sha256:cf07c502528bfd9e6b184776659f05d9212811d76bbec9fbb6bf34bed4c7456f",
+                "sha256:e9f40bee671d985fd25d7a5409b56d4f103777bf8a0c6d746ea5fbf97a8186d9"
             ],
-            "markers": "python_version >= '3.8'",
-            "version": "==0.7.0"
+            "markers": "python_version >= '3.9'",
+            "version": "==0.8.0"
         },
         "fastar": {
             "hashes": [
@@ -1161,11 +1161,11 @@
         },
         "typer": {
             "hashes": [
-                "sha256:4b3bde918a67c8e03d861aa02deca90a95bbac572e71b1b9be56ff49affdb5a8",
-                "sha256:68585eb1b01203689c4199bc440d6be616f0851e9f0eb41e4a778845c5a0fd5b"
+                "sha256:c79c01ca6b30af9fd48284058a7056ba0d3bf5cf10d0ff3d0c5b11b68c258ac6",
+                "sha256:c87c0d2b6eee3b49c5c64649ec92425492c14488096dfbc8a0c2799b2f6f9c53"
             ],
-            "markers": "python_version >= '3.8'",
-            "version": "==0.20.1"
+            "markers": "python_version >= '3.9'",
+            "version": "==0.21.0"
         },
         "typing-extensions": {
             "hashes": [
