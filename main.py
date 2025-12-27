@@ -2,9 +2,9 @@ import logging
 import os
 import time
 import traceback
-from typing import Union
+from typing import Union, Annotated
 import crawleruseragents
-from fastapi import APIRouter, FastAPI, HTTPException, Request, UploadFile
+from fastapi import APIRouter, FastAPI, HTTPException, Request, UploadFile, Form
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.exception_handlers import http_exception_handler
@@ -385,7 +385,13 @@ async def page_get_submit(request: Request):
     summary="Submits a new image.",
     response_class=HTMLResponse,
 )
-async def page_post_submit(request: Request, file: UploadFile):
+async def page_post_submit(request: Request, file: UploadFile, accept_conditions: Annotated[bool, Form()],):
+    if not accept_conditions:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=f"I'm sorry, but you have to accept the conditions!",
+        )
+    
     if file.size > ALLOWED_MAX_UPLOAD_FILE_SIZE:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
