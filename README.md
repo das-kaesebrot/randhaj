@@ -33,6 +33,7 @@ You may configure the web service via environment variables.
 | - | - | - | - |
 | `RANDHAJ_IMAGE_DIR` | Where to load the images to display from. Supperted file types: `jpg` and `png` | `assets/images` (in Docker: `/var/assets`) | No |
 | `RANDHAJ_CACHE_DIR` | Where to save the cached images (converted/resized) | `cache` | No |
+| `RANDHAJ_CACHE_DB_FILE` | File path for the SQLite database | `<RANDHAJ_CACHE_DIR>/.randhaj-cache.db` | No |
 | `RANDHAJ_SUBMISSIONS_DIR` | Where to save the submitted images (converted/resized) | `submissions` | No |
 | `RANDHAJ_SUBMISSIONS_DIR_DISK_USAGE_LIMIT"` | Maximum disk usage, above which submissions are blocked (float value between 0.0 and 1.0) | `0.9` | No |
 | `RANDHAJ_SITE_TITLE` | The site title to use | `Random image` | No |
