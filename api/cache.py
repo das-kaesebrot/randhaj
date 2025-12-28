@@ -136,7 +136,7 @@ class Cache:
 
             i.add_watch(
                 self._image_dir,
-                mask=inotify.constants.IN_DELETE | inotify.constants.IN_CLOSE_WRITE,
+                mask=inotify.constants.IN_CLOSE_WRITE | inotify.constants.IN_MOVED_TO | inotify.constants.IN_DELETE | inotify.constants.IN_MOVED_FROM,
             )
             logger.info(f"Added watch for folder '{self._image_dir}'")
 
@@ -147,8 +147,8 @@ class Cache:
 
                 if (
                     mask & inotify.constants.IN_CLOSE_WRITE
-                ) == inotify.constants.IN_CLOSE_WRITE:
-                    logger.info(f"Detected new file '{filename}', adjusting cache")
+                ) == inotify.constants.IN_CLOSE_WRITE or (mask & inotify.constants.IN_MOVED_TO) == inotify.constants.IN_MOVED_TO:
+                    logger.info(f"Detected new file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache")
 
                     if (
                         os.path.splitext(filename.lower())[1]
@@ -185,8 +185,8 @@ class Cache:
 
                 elif (
                     mask & inotify.constants.IN_DELETE
-                ) == inotify.constants.IN_DELETE:
-                    logger.info(f"Detected deleted file '{filename}', adjusting cache")
+                ) == inotify.constants.IN_DELETE or (mask & inotify.constants.IN_MOVED_FROM) == inotify.constants.IN_MOVED_FROM:
+                    logger.info(f"Detected deleted file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache")
                     self._delete_by_original_filename(filename)
 
         except KeyboardInterrupt or InterruptedError as e:
