@@ -277,6 +277,19 @@ class Cache:
     def get_all_images(self) -> list[CachedImage]:
         select_statement = select(CachedImage)
         return self.__session.scalars(select_statement).all()
+    
+    def exists_by_original_filename(self, original_filename: str) -> bool:
+        select_statement = select(CachedImage).where(
+            CachedImage.original_filename.is_(original_filename)
+        )
+        return self.__session.scalars(select_statement).one_or_none() is not None
+    
+    def _get_by_original_filename(self, original_filename: str) -> CachedImage:
+        select_statement = select(CachedImage).where(
+            CachedImage.original_filename.is_(original_filename)
+        )
+        return self.__session.scalars(select_statement).first()
+
 
     def _delete_by_original_filename(self, original_filename: str):
         delete_statement = delete(CachedImage).where(
