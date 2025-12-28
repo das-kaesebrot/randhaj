@@ -71,6 +71,8 @@ class Cache:
 
     def _generate_cache(self, max_threadpool_workers: int):
         start = perf_counter()
+        generated = 0
+        image_files_present_in_directory = []
 
         def convert_and_save(filename: str):
             self._logger.debug(f"Started conversion job for '{filename}'")
@@ -103,13 +105,22 @@ class Cache:
                     )
                     continue
 
+                image_files_present_in_directory.append(filename)
+
+                if self.exists_by_original_filename(filename):
+                    self._logger.info(f"Skipping file '{filename}' because it already exists in the cache")
+                    continue
+
+                self._logger.info(f"Caching new file '{filename}'")
                 executor.submit(convert_and_save, filename=filename)
+                generated += 1
 
         self._commit_and_flush()
+        num_deleted = self.remove_diff_cached_images(image_files_present_in_directory)
 
         end = perf_counter()
         self._logger.info(
-            f"Generated {self.get_total_image_count()} cached images in {timedelta(seconds=end - start)}"
+            f"Startup cache sync with assets directory done: {generated} new / {num_deleted} deleted / {self.get_total_image_count()} total, time taken: {timedelta(seconds=end - start)}"
         )
 
     def _dispatch_inotify_thread(self):
