@@ -290,6 +290,14 @@ class Cache:
         )
         return self.__session.scalars(select_statement).first()
 
+    def remove_diff_cached_images(self, original_filenames: list[str]):
+        """
+        Removes all cached images from the DB that are not in the given list
+        """
+        delete_statement = delete(CachedImage).where(CachedImage.original_filename.not_in(original_filenames))
+        result = self.__session.execute(delete_statement)
+        self._commit_and_flush()
+        return result.rowcount
 
     def _delete_by_original_filename(self, original_filename: str):
         delete_statement = delete(CachedImage).where(
