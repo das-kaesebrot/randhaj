@@ -312,10 +312,11 @@ class Cache:
         return result.rowcount
 
     def _delete_by_original_filename(self, original_filename: str):
-        delete_statement = delete(CachedImage).where(
+        select_statement = select(CachedImage).where(
             CachedImage.original_filename.is_(original_filename)
         )
-        self.__session.execute(delete_statement)
+        result = self.__session.scalars(select_statement).one_or_none()
+        self.__session.delete(result)
         self._commit_and_flush()
 
     def _commit_and_flush(self):
