@@ -35,7 +35,7 @@ You may configure the web service via environment variables.
 | `RANDHAJ_CACHE_DIR` | Where to save the cached images (converted/resized) | `cache` | No |
 | `RANDHAJ_CACHE_DB_FILE` | File path for the SQLite database | `<RANDHAJ_CACHE_DIR>/.randhaj-cache.db` | No |
 | `RANDHAJ_SUBMISSIONS_DIR` | Where to save the submitted images (converted/resized) | `submissions` | No |
-| `RANDHAJ_SUBMISSIONS_DIR_DISK_USAGE_LIMIT"` | Maximum disk usage, above which submissions are blocked (float value between 0.0 and 1.0) | `0.9` | No |
+| `RANDHAJ_SUBMISSIONS_DIR_DISK_USAGE_LIMIT` | Maximum disk usage, above which submissions are blocked (float value between 0.0 and 1.0) | `0.9` | No |
 | `RANDHAJ_SITE_TITLE` | The site title to use | `Random image` | No |
 | `RANDHAJ_SITE_EMOJI` | The site emoji (used for the favicon and title) | `🦈` | No |
 | `RANDHAJ_DEFAULT_CARD_IMAGE` | The image ID to use as the [Open Graph](https://ogp.me/) thumbnail for the root view (`/`) | The (alphabetically) first ID | No |
