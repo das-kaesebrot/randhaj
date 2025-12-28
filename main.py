@@ -41,6 +41,7 @@ ALLOWED_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg"]
 version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
 cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
+cache_db_file = os.getenv(f"{ENV_PREFIX}_CACHE_DB_FILE", f"{cache_dir.rstrip("/")}/.randhaj-cache.db")
 submissions_dir = os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR", "submissions")
 max_submissions_usage = float(
     os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR_DISK_USAGE_LIMIT", "0.9")
@@ -100,6 +101,7 @@ cache = Cache(
     image_dir=source_image_dir,
     cache_dir=cache_dir,
     max_initial_cache_generator_workers=max_initial_cache_generator_workers,
+    connection_string=f"sqlite:///{cache_db_file}"
 )
 
 if not default_card_image_id:

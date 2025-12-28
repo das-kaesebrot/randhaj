@@ -71,6 +71,8 @@ class Cache:
 
     def _generate_cache(self, max_threadpool_workers: int):
         start = perf_counter()
+        generated = 0
+        image_files_present_in_directory = []
 
         def convert_and_save(filename: str):
             self._logger.debug(f"Started conversion job for '{filename}'")
@@ -103,13 +105,22 @@ class Cache:
                     )
                     continue
 
+                image_files_present_in_directory.append(filename)
+
+                if self.exists_by_original_filename(filename):
+                    self._logger.info(f"Skipping file '{filename}' because it already exists in the cache")
+                    continue
+
+                self._logger.info(f"Caching new file '{filename}'")
                 executor.submit(convert_and_save, filename=filename)
+                generated += 1
 
         self._commit_and_flush()
+        num_deleted = self.remove_diff_cached_images(image_files_present_in_directory)
 
         end = perf_counter()
         self._logger.info(
-            f"Generated {self.get_total_image_count()} cached images in {timedelta(seconds=end - start)}"
+            f"Startup cache sync with assets directory done: {generated} new / {num_deleted} deleted / {self.get_total_image_count()} total, time taken: {timedelta(seconds=end - start)}"
         )
 
     def _dispatch_inotify_thread(self):
@@ -125,7 +136,7 @@ class Cache:
 
             i.add_watch(
                 self._image_dir,
-                mask=inotify.constants.IN_DELETE | inotify.constants.IN_CLOSE_WRITE,
+                mask=inotify.constants.IN_CLOSE_WRITE | inotify.constants.IN_MOVED_TO | inotify.constants.IN_DELETE | inotify.constants.IN_MOVED_FROM,
             )
             logger.info(f"Added watch for folder '{self._image_dir}'")
 
@@ -136,8 +147,8 @@ class Cache:
 
                 if (
                     mask & inotify.constants.IN_CLOSE_WRITE
-                ) == inotify.constants.IN_CLOSE_WRITE:
-                    logger.info(f"Detected new file '{filename}', adjusting cache")
+                ) == inotify.constants.IN_CLOSE_WRITE or (mask & inotify.constants.IN_MOVED_TO) == inotify.constants.IN_MOVED_TO:
+                    logger.info(f"Detected new file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache")
 
                     if (
                         os.path.splitext(filename.lower())[1]
@@ -165,6 +176,7 @@ class Cache:
                             id=id, original_filename=filename, image_metadata=metadata
                         )
                         self.__session.add(cached_image)
+                        self._commit_and_flush()
                     except OSError:
                         logger.exception("Exception while converting file")
                         continue
@@ -174,8 +186,8 @@ class Cache:
 
                 elif (
                     mask & inotify.constants.IN_DELETE
-                ) == inotify.constants.IN_DELETE:
-                    logger.info(f"Detected deleted file '{filename}', adjusting cache")
+                ) == inotify.constants.IN_DELETE or (mask & inotify.constants.IN_MOVED_FROM) == inotify.constants.IN_MOVED_FROM:
+                    logger.info(f"Detected deleted file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache")
                     self._delete_by_original_filename(filename)
 
         except KeyboardInterrupt or InterruptedError as e:
@@ -277,12 +289,34 @@ class Cache:
     def get_all_images(self) -> list[CachedImage]:
         select_statement = select(CachedImage)
         return self.__session.scalars(select_statement).all()
-
-    def _delete_by_original_filename(self, original_filename: str):
-        delete_statement = delete(CachedImage).where(
+    
+    def exists_by_original_filename(self, original_filename: str) -> bool:
+        select_statement = select(CachedImage).where(
             CachedImage.original_filename.is_(original_filename)
         )
-        self.__session.execute(delete_statement)
+        return self.__session.scalars(select_statement).one_or_none() is not None
+    
+    def _get_by_original_filename(self, original_filename: str) -> CachedImage:
+        select_statement = select(CachedImage).where(
+            CachedImage.original_filename.is_(original_filename)
+        )
+        return self.__session.scalars(select_statement).first()
+
+    def remove_diff_cached_images(self, original_filenames: list[str]):
+        """
+        Removes all cached images from the DB that are not in the given list
+        """
+        delete_statement = delete(CachedImage).where(CachedImage.original_filename.not_in(original_filenames))
+        result = self.__session.execute(delete_statement)
+        self._commit_and_flush()
+        return result.rowcount
+
+    def _delete_by_original_filename(self, original_filename: str):
+        select_statement = select(CachedImage).where(
+            CachedImage.original_filename.is_(original_filename)
+        )
+        result = self.__session.scalars(select_statement).one_or_none()
+        self.__session.delete(result)
         self._commit_and_flush()
 
     def _commit_and_flush(self):
