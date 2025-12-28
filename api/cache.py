@@ -176,6 +176,7 @@ class Cache:
                             id=id, original_filename=filename, image_metadata=metadata
                         )
                         self.__session.add(cached_image)
+                        self._commit_and_flush()
                     except OSError:
                         logger.exception("Exception while converting file")
                         continue
