@@ -48,6 +48,10 @@ class Cache:
         self._cache_dir = cache_dir
         self._image_dir = image_dir
 
+        if not os.path.exists(self._cache_dir):
+            self._logger.info(f"Cache directory at '{self._cache_dir}' doesn't exist yet, creating it")
+            os.makedirs(self._cache_dir)
+
         self._logger.info(
             f"Creating database engine with connection string '{connection_string}'"
         )
