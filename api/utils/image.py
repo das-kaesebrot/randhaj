@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import logging
 import os
 from typing import Union
 from PIL import Image, ImageOps
@@ -11,10 +12,12 @@ from api.utils.filename import FilenameUtils
 MAX_SIZE = Constants.get_max_width()
 FORMAT = Constants.DEFAULT_FORMAT
 EXTENSION = Constants.DEFAULT_EXTENSION
-FORMAT_QUALITY = 95
+SAVE_PROPERTIES = { "quality": 95 }
 
 
 class ImageProcessor:
+    logger = logging.getLogger(__name__)
+
     def __init__(self):
         pass
 
@@ -157,13 +160,25 @@ class ImageProcessor:
 
         image = cls.resize(image, width, height)
         image.format = source.format
+
+        extension = EXTENSION # fall back to EXTENSION constant
+        if hasattr(source, "filename"):
+            original_filename = source.filename
+
+            if original_filename:
+                _, extension = os.path.splitext(original_filename)
+                extension = extension.lower()[1:]
+
         filename = os.path.join(
             output_path,
             FilenameUtils.get_filename(
-                id=id, width=width, height=height, extension=image.format
+                id=id, width=width, height=height, extension=extension
             ),
         )
-        image.save(filename, quality=FORMAT_QUALITY)
+
+        cls.logger.debug(f"Saving image with id='{id}', filename='{filename}' ({width}x{height}), format={image.format}, save_properties={SAVE_PROPERTIES}")
+
+        image.save(filename, **SAVE_PROPERTIES)
         return filename
 
     @staticmethod
