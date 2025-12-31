@@ -25,5 +25,6 @@ class ImageMetadata(Base):
     original_height: Mapped[int] = mapped_column()
     media_type: Mapped[str] = mapped_column()
     format: Mapped[str] = mapped_column()
+    extension: Mapped[str] = mapped_column()
 
     image: Mapped[CachedImage] = relationship(back_populates="image_metadata")

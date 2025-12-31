@@ -8,9 +8,9 @@ class FilenameUtils:
     @staticmethod
     def get_filename_with_image_data(*, id: str, data: Image.Image):
         return FilenameUtils.get_filename(
-            id=id, width=data.width, height=data.height, format=data.format
+            id=id, width=data.width, height=data.height, extension=data.format
         )
 
     @staticmethod
-    def get_filename(*, id: str, width: int, height: int, format: str):
-        return f"{id}_{width}x{height}.{format.lower()}"
+    def get_filename(*, id: str, width: int, height: int, extension: str):
+        return f"{id}_{width}x{height}.{extension.lower()}"

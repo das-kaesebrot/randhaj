@@ -223,7 +223,7 @@ class Cache:
         expected_filename = os.path.join(
             self._cache_dir,
             FilenameUtils.get_filename(
-                id=id, width=width, height=height, format=metadata.format
+                id=id, width=width, height=height, extension=metadata.extension
             ),
         )
 
@@ -236,7 +236,7 @@ class Cache:
                 id=id,
                 width=metadata.original_width,
                 height=metadata.original_height,
-                format=metadata.format,
+                extension=metadata.extension,
             ),
         )
         filename = ImageProcessor.write_scaled_copy_from_source_filename_to_filesystem(

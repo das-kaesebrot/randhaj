@@ -10,6 +10,8 @@ from api.utils.filename import FilenameUtils
 
 MAX_SIZE = Constants.get_max_width()
 FORMAT = Constants.DEFAULT_FORMAT
+EXTENSION = Constants.DEFAULT_EXTENSION
+FORMAT_QUALITY = 95
 
 
 class ImageProcessor:
@@ -100,7 +102,7 @@ class ImageProcessor:
         filename = os.path.join(
             output_path,
             FilenameUtils.get_filename(
-                id=id, width=rgb_image.width, height=rgb_image.height, format=FORMAT
+                id=id, width=rgb_image.width, height=rgb_image.height, extension=EXTENSION
             ),
         )
 
@@ -112,6 +114,7 @@ class ImageProcessor:
             original_height=rgb_image.height,
             media_type=Image.MIME.get(FORMAT.upper()),
             format=FORMAT,
+            extension=EXTENSION,
         )
 
         return (id, metadata)
@@ -157,10 +160,10 @@ class ImageProcessor:
         filename = os.path.join(
             output_path,
             FilenameUtils.get_filename(
-                id=id, width=width, height=height, format=image.format
+                id=id, width=width, height=height, extension=image.format
             ),
         )
-        image.save(filename)
+        image.save(filename, quality=FORMAT_QUALITY)
         return filename
 
     @staticmethod

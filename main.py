@@ -506,8 +506,8 @@ async def api_get_image(
     download: bool = False,
     square: bool = False,
 ):
-    if image_id.endswith(f".{Constants.DEFAULT_FORMAT}"):
-        image_id = image_id.rstrip(f".{Constants.DEFAULT_FORMAT}")
+    if image_id.endswith(f".{Constants.DEFAULT_EXTENSION}"):
+        image_id = image_id.rstrip(f".{Constants.DEFAULT_EXTENSION}")
 
     return get_file_response(
         image_id=image_id,
