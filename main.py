@@ -275,6 +275,8 @@ def get_image_page_response(
             "thumbnail_width": Constants.get_small_thumbnail_width(),
             "nav_page": "image",
             "request_duration": ns_to_duration_str(time.perf_counter_ns() - start),
+            "background_image_id": image_id,
+            "background_image_width": Constants.get_background_width(),
         },
     )
 
@@ -322,6 +324,8 @@ def get_gallery_page_response(
             "page_size": page_size,
             "nav_page": "gallery",
             "request_duration": ns_to_duration_str(time.perf_counter_ns() - start),
+            "background_image_id": default_card_image_id,
+            "background_image_width": Constants.get_background_width(),
         },
     )
 
@@ -341,25 +345,8 @@ def get_submit_page_response(
             "default_card_image_id": default_card_image_id,
             "nav_page": "submit",
             "request_duration": ns_to_duration_str(time.perf_counter_ns() - start),
-        },
-    )
-
-
-def get_submit_page_response_for_upload(
-    request: Request,
-) -> HTMLResponse:
-    start = time.perf_counter_ns()
-
-    return templates.TemplateResponse(
-        request=request,
-        name="submit.html",
-        context={
-            "site_emoji": site_emoji,
-            "site_title": site_title,
-            "version": version,
-            "default_card_image_id": default_card_image_id,
-            "nav_page": "submit",
-            "request_duration": ns_to_duration_str(time.perf_counter_ns() - start),
+            "background_image_id": default_card_image_id,
+            "background_image_width": Constants.get_background_width(),
         },
     )
 
@@ -463,6 +450,8 @@ async def page_post_submit(
             "submitted_image_id": id,
             "default_card_image_id": default_card_image_id,
             "nav_page": "submit",
+            "background_image_id": default_card_image_id,
+            "background_image_width": Constants.get_background_width(),
         },
     )
 
@@ -559,12 +548,13 @@ async def http_exception_handler_with_view_handling(request, exc: HTTPException)
                 "site_emoji": site_emoji,
                 "site_title": site_title,
                 "version": version,
-                "current_width": Constants.get_default_width(),
                 "default_card_image_id": default_card_image_id,
                 "http_status": http_status,
                 "exception": exc,
                 "traceback_str": traceback_str,
                 "request": request,
+                "background_image_id": default_card_image_id,
+                "background_image_width": Constants.get_background_width(),
             },
             status_code=http_status,
         )
