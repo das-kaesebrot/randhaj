@@ -578,6 +578,7 @@ async def intercept_requests_on_startup(request: Request, call_next):
                     "site_title": site_title,
                     "version": version,
                     "request": request,
+                    "url": str(request.url),
                 },
                 status_code=HTTPStatus.SERVICE_UNAVAILABLE,
             )
