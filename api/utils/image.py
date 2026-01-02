@@ -76,12 +76,12 @@ class ImageProcessor:
 
     @classmethod
     def convert_to_unified_format_and_write_to_filesystem(
-        cls, output_path: str, image: Image.Image, force_write: bool = False
+        cls, output_path: str, image: Image.Image, force_write: bool = False, filename_prefix: str = None, format: str = FORMAT, format_save_properties: dict = SAVE_PROPERTIES, filename_extension = EXTENSION
     ) -> tuple[str, ImageMetadata]:
         """
         Generates a new image from an input image with the following properties:
         - RGB color palette (no alpha channel)
-        - PNG format
+        - JPEG format
         - Maximum width: 2048 pixels
         - no EXIF data from the input image
 
@@ -105,19 +105,19 @@ class ImageProcessor:
         filename = os.path.join(
             output_path,
             FilenameUtils.get_filename(
-                id=id, width=rgb_image.width, height=rgb_image.height, extension=EXTENSION
+                id=id, width=rgb_image.width, height=rgb_image.height, extension=filename_extension
             ),
         )
 
         if force_write or not os.path.isfile(filename):
-            rgb_image.save(filename, format=FORMAT)
+            rgb_image.save(filename, format=format, **format_save_properties)
 
         metadata = ImageMetadata(
             original_width=rgb_image.width,
             original_height=rgb_image.height,
-            media_type=Image.MIME.get(FORMAT.upper()),
-            format=FORMAT,
-            extension=EXTENSION,
+            media_type=Image.MIME.get(format.upper()),
+            format=format,
+            extension=filename_extension,
         )
 
         return (id, metadata)
