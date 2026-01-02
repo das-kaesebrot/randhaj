@@ -104,7 +104,7 @@ cache = Cache(
     max_initial_cache_generator_workers=max_initial_cache_generator_workers,
     connection_string=f"sqlite:///{cache_db_file}"
 )
-task = asyncio.create_task(cache.start())
+cache_start = asyncio.create_task(cache.start())
 
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
@@ -565,7 +565,7 @@ async def http_exception_handler_with_view_handling(request, exc: HTTPException)
 
 @app.middleware("http")
 async def intercept_requests_on_startup(request: Request, call_next):
-    if not task.done():
+    if not cache_start.done():
         path = request.scope.get("path")
         if not path.startswith(("/static/dist", "/favicon.ico")):
             return templates.TemplateResponse(
