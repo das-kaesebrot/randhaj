@@ -7,7 +7,7 @@ from typing import Union, Annotated
 import crawleruseragents
 import shutil
 from fastapi import APIRouter, FastAPI, HTTPException, Request, UploadFile, Form
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.exception_handlers import http_exception_handler
 from http import HTTPStatus
@@ -567,6 +567,8 @@ async def http_exception_handler_with_view_handling(request, exc: HTTPException)
 async def intercept_requests_on_startup(request: Request, call_next):
     if not cache_start.done():
         path = request.scope.get("path")
+        if path.startswith("/api/v1"):
+            return JSONResponse(content={"status": "starting"}, status_code=HTTPStatus.SERVICE_UNAVAILABLE)
         if not path.startswith(("/static/dist", "/favicon.ico")):
             return templates.TemplateResponse(
                 request=request,
