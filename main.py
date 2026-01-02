@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import time
@@ -103,6 +104,7 @@ cache = Cache(
     max_initial_cache_generator_workers=max_initial_cache_generator_workers,
     connection_string=f"sqlite:///{cache_db_file}"
 )
+task = asyncio.create_task(cache.start())
 
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
