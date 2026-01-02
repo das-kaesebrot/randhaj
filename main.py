@@ -245,7 +245,7 @@ def get_image_page_response(
                 width=width,
                 height=height,
                 square=False,
-                generate_variant_if_missing=False,
+                only_get_filename=True,
             )
         )
         variants.append(

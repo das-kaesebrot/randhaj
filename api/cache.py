@@ -203,7 +203,7 @@ class Cache:
         width: Union[int, None] = None,
         height: Union[int, None] = None,
         square: bool = False,
-        generate_variant_if_missing: bool = True,
+        only_get_filename: bool = False,
     ) -> str:
         metadata = self.get_metadata(id=id)
         if not metadata:
@@ -231,7 +231,11 @@ class Cache:
             ),
         )
 
-        if os.path.isfile(expected_filename) or not generate_variant_if_missing:
+        if only_get_filename:
+            return expected_filename
+        
+        if os.path.isfile(expected_filename):
+            self._logger.info(f"CACHE HIT id='{id}' ({width}x{height}) cache_file='{expected_filename}'")
             return expected_filename
 
         source_filename = os.path.join(
@@ -251,6 +255,7 @@ class Cache:
             height=height,
             crop_square=square,
         )
+        self._logger.info(f"CACHE MISS id='{id}' ({width}x{height}) cache_file='{filename}'")
 
         return filename
 
