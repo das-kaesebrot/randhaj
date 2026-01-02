@@ -562,3 +562,22 @@ async def http_exception_handler_with_view_handling(request, exc: HTTPException)
         )
 
     return await http_exception_handler(request, exc)
+
+@app.middleware("http")
+async def intercept_requests_on_startup(request: Request, call_next):
+    if not task.done():
+        path = request.scope.get("path")
+        if not path.startswith(("/static/dist", "/favicon.ico")):
+            return templates.TemplateResponse(
+                request=request,
+                name="startup.html",
+                context={
+                    "site_emoji": site_emoji,
+                    "site_title": site_title,
+                    "version": version,
+                    "request": request,
+                },
+                status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+            )
+
+    return await call_next(request)
