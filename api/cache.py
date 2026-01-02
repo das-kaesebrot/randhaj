@@ -29,6 +29,9 @@ class Cache:
     __engine: Engine = None
     __session = None
 
+    __enable_inotify: bool
+    __max_initial_cache_generator_workers: int
+
     def __init__(
         self,
         *,
@@ -68,9 +71,13 @@ class Cache:
         assert self.__engine is not None
         assert self.__session is not None
 
-        self._generate_cache(max_threadpool_workers=max_initial_cache_generator_workers)
+        self.__enable_inotify = enable_inotify
+        self.__max_initial_cache_generator_workers = max_initial_cache_generator_workers
 
-        if enable_inotify:
+    async def start(self):
+        self._generate_cache(max_threadpool_workers=self.__max_initial_cache_generator_workers)
+
+        if self.__enable_inotify:
             self._dispatch_inotify_thread()
 
     def _generate_cache(self, max_threadpool_workers: int):

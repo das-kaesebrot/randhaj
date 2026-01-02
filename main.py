@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import time
@@ -6,7 +7,7 @@ from typing import Union, Annotated
 import crawleruseragents
 import shutil
 from fastapi import APIRouter, FastAPI, HTTPException, Request, UploadFile, Form
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.exception_handlers import http_exception_handler
 from http import HTTPStatus
@@ -103,6 +104,7 @@ cache = Cache(
     max_initial_cache_generator_workers=max_initial_cache_generator_workers,
     connection_string=f"sqlite:///{cache_db_file}"
 )
+cache_start = asyncio.create_task(cache.start())
 
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
@@ -560,3 +562,25 @@ async def http_exception_handler_with_view_handling(request, exc: HTTPException)
         )
 
     return await http_exception_handler(request, exc)
+
+@app.middleware("http")
+async def intercept_requests_on_startup(request: Request, call_next):
+    if not cache_start.done():
+        path = request.scope.get("path")
+        if path.startswith("/api/v1"):
+            return JSONResponse(content={"status": "starting"}, status_code=HTTPStatus.SERVICE_UNAVAILABLE)
+        if not path.startswith(("/static/dist", "/favicon.ico")):
+            return templates.TemplateResponse(
+                request=request,
+                name="startup.html",
+                context={
+                    "site_emoji": site_emoji,
+                    "site_title": site_title,
+                    "version": version,
+                    "request": request,
+                    "url": str(request.url),
+                },
+                status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+            )
+
+    return await call_next(request)
