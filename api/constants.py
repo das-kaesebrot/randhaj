@@ -7,6 +7,10 @@ class Constants:
     @staticmethod
     def get_default_width():
         return Constants.ALLOWED_DIMENSIONS[2]
+    
+    @classmethod
+    def get_background_width(cls):
+        return cls.get_default_width()
 
     @staticmethod
     def get_max_width():
