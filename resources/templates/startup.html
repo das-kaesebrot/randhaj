@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block opengraph_head %}{% endblock opengraph_head %}
+{% block head %}
+    {{ super() }}
+    <meta http-equiv="refresh" content="5">
+{% endblock head %}
+
+{% block body %}
+<div class="container text-center">
+    <div class="align-self-center">
+        <strong role="status">{{ site_title }} is still starting up...</strong>
+        <div class="spinner-border ms-auto" aria-hidden="true"></div>
+    </div>
+    <p>Trying URL <a href="{{ url }}" class="text-reset">{{ url }}</a> again...</p>
+</div>
+<footer class="footer mt-auto py-3">
+    {% include "custom/footer.html" ignore missing %}
+    {% block footer %}
+    <div class="container">
+      <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code>{% if request_duration %} ({{ request_duration }}){% endif %}</p>
+    </div>
+    {% endblock footer %}
+</footer>
+{% endblock body %}
