@@ -12,5 +12,5 @@ class FilenameUtils:
         )
 
     @staticmethod
-    def get_filename(*, id: str, width: int, height: int, extension: str):
-        return f"{id}_{width}x{height}.{extension.lower()}"
+    def get_filename(*, id: str, width: int, height: int, extension: str, prefix: str = None):
+        return f"{'' if not prefix else prefix + '_'}{id}_{width}x{height}.{extension.lower()}"

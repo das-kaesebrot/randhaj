@@ -431,7 +431,7 @@ async def page_post_submit(
         with Image.open(contents) as image:
             id, metadata = (
                 ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
-                    output_path=submissions_dir, image=image
+                    output_path=submissions_dir, image=image, format_save_properties={ "quality": 100 }, filename_prefix="submission"
                 )
             )
     except UnidentifiedImageError as e:

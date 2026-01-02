@@ -105,7 +105,7 @@ class ImageProcessor:
         filename = os.path.join(
             output_path,
             FilenameUtils.get_filename(
-                id=id, width=rgb_image.width, height=rgb_image.height, extension=filename_extension
+                id=id, width=rgb_image.width, height=rgb_image.height, extension=filename_extension, prefix=filename_prefix
             ),
         )
 
