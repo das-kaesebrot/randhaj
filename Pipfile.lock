@@ -66,10 +66,10 @@
         },
         "crawler-user-agents": {
             "hashes": [
-                "sha256:ca5cdab6786a15c26c50180b332db73a6505c608136ab4663e878895caa4fb14"
+                "sha256:38cde0bf28a9c633f04f24a24cd888056319e8386d4cd397270a09b220c9b0df"
             ],
             "index": "pypi",
-            "version": "==1.24.0"
+            "version": "==1.25.0"
         },
         "dnspython": {
             "hashes": [
@@ -111,11 +111,11 @@
         },
         "fastapi-cloud-cli": {
             "hashes": [
-                "sha256:07930591122ee4aefd113ea5355fca33141af31195da9038be526bacd5accbfe",
-                "sha256:21bf02163cebb5664f59613269eb18f74cc9ea2323d972f049c7fafa7abed0d1"
+                "sha256:76857b0f09d918acfcb50ade34682ba3b2079ca0c43fda10215de301f185a7f8",
+                "sha256:ecc83a5db106be35af528eccb01aa9bced1d29783efd48c8c1c831cf111eea99"
             ],
             "markers": "python_version >= '3.9'",
-            "version": "==0.9.0"
+            "version": "==0.11.0"
         },
         "fastar": {
             "hashes": [
