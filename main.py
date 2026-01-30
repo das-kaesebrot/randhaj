@@ -131,7 +131,7 @@ def get_file_response(
     width: Union[int, None] = None,
     height: Union[int, None] = None,
     download: bool = False,
-    set_cache_header: bool = True,
+    enable_cache: bool = True,
     square: bool = False,
 ) -> FileResponse:
     if not cache.id_exists(image_id):
@@ -183,10 +183,12 @@ def get_file_response(
         "X-Image-Id": f"{image_id}",
     }
 
-    if set_cache_header:
+    if enable_cache:
         headers["Cache-Control"] = (
             f"max-age={IMAGE_FILES_CACHING_TIME}, s-maxage={IMAGE_FILES_CACHING_TIME}, public, no-transform, immutable"
         )
+    else:
+        headers["Cache-Control"] = "no-store"
 
     return FileResponse(
         path=filename,
@@ -481,7 +483,7 @@ async def api_get_rand_image(
         width=width,
         height=height,
         download=download,
-        set_cache_header=False,
+        enable_cache=False,
     )
 
 
