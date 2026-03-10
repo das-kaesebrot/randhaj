@@ -42,7 +42,9 @@ ALLOWED_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg"]
 version = os.getenv("APP_VERSION", "local-dev")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
 cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
-cache_db_file = os.getenv(f"{ENV_PREFIX}_CACHE_DB_FILE", f"{cache_dir.rstrip("/")}/.randhaj-cache.db")
+cache_db_file = os.getenv(
+    f"{ENV_PREFIX}_CACHE_DB_FILE", f"{cache_dir.rstrip('/')}/.randhaj-cache.db"
+)
 submissions_dir = os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR", "submissions")
 max_submissions_usage = float(
     os.getenv(f"{ENV_PREFIX}_SUBMISSIONS_DIR_DISK_USAGE_LIMIT", "0.9")
@@ -102,7 +104,7 @@ cache = Cache(
     image_dir=source_image_dir,
     cache_dir=cache_dir,
     max_initial_cache_generator_workers=max_initial_cache_generator_workers,
-    connection_string=f"sqlite:///{cache_db_file}"
+    connection_string=f"sqlite:///{cache_db_file}",
 )
 cache_start = asyncio.create_task(cache.start())
 
@@ -435,7 +437,10 @@ async def page_post_submit(
         with Image.open(contents) as image:
             id, metadata = (
                 ImageProcessor.convert_to_unified_format_and_write_to_filesystem(
-                    output_path=submissions_dir, image=image, format_save_properties={ "quality": 100 }, filename_prefix="submission"
+                    output_path=submissions_dir,
+                    image=image,
+                    format_save_properties={"quality": 100},
+                    filename_prefix="submission",
                 )
             )
     except UnidentifiedImageError as e:
@@ -565,12 +570,16 @@ async def http_exception_handler_with_view_handling(request, exc: HTTPException)
 
     return await http_exception_handler(request, exc)
 
+
 @app.middleware("http")
 async def intercept_requests_on_startup(request: Request, call_next):
     if not cache_start.done():
         path = request.scope.get("path")
         if path.startswith("/api/v1"):
-            return JSONResponse(content={"status": "starting"}, status_code=HTTPStatus.SERVICE_UNAVAILABLE)
+            return JSONResponse(
+                content={"status": "starting"},
+                status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+            )
         if not path.startswith(("/static/dist", "/favicon.ico")):
             return templates.TemplateResponse(
                 request=request,

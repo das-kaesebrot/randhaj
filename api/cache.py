@@ -52,7 +52,9 @@ class Cache:
         self._image_dir = image_dir
 
         if not os.path.exists(self._cache_dir):
-            self._logger.info(f"Cache directory at '{self._cache_dir}' doesn't exist yet, creating it")
+            self._logger.info(
+                f"Cache directory at '{self._cache_dir}' doesn't exist yet, creating it"
+            )
             os.makedirs(self._cache_dir)
 
         self._logger.info(
@@ -75,7 +77,9 @@ class Cache:
         self.__max_initial_cache_generator_workers = max_initial_cache_generator_workers
 
     async def start(self):
-        self._generate_cache(max_threadpool_workers=self.__max_initial_cache_generator_workers)
+        self._generate_cache(
+            max_threadpool_workers=self.__max_initial_cache_generator_workers
+        )
 
         if self.__enable_inotify:
             self._dispatch_inotify_thread()
@@ -119,7 +123,9 @@ class Cache:
                 image_files_present_in_directory.append(filename)
 
                 if self.exists_by_original_filename(filename):
-                    self._logger.info(f"Skipping file '{filename}' because it already exists in the cache")
+                    self._logger.info(
+                        f"Skipping file '{filename}' because it already exists in the cache"
+                    )
                     continue
 
                 self._logger.info(f"Caching new file '{filename}'")
@@ -147,7 +153,10 @@ class Cache:
 
             i.add_watch(
                 self._image_dir,
-                mask=inotify.constants.IN_CLOSE_WRITE | inotify.constants.IN_MOVED_TO | inotify.constants.IN_DELETE | inotify.constants.IN_MOVED_FROM,
+                mask=inotify.constants.IN_CLOSE_WRITE
+                | inotify.constants.IN_MOVED_TO
+                | inotify.constants.IN_DELETE
+                | inotify.constants.IN_MOVED_FROM,
             )
             logger.info(f"Added watch for folder '{self._image_dir}'")
 
@@ -158,8 +167,12 @@ class Cache:
 
                 if (
                     mask & inotify.constants.IN_CLOSE_WRITE
-                ) == inotify.constants.IN_CLOSE_WRITE or (mask & inotify.constants.IN_MOVED_TO) == inotify.constants.IN_MOVED_TO:
-                    logger.info(f"Detected new file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache")
+                ) == inotify.constants.IN_CLOSE_WRITE or (
+                    mask & inotify.constants.IN_MOVED_TO
+                ) == inotify.constants.IN_MOVED_TO:
+                    logger.info(
+                        f"Detected new file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache"
+                    )
 
                     if (
                         os.path.splitext(filename.lower())[1]
@@ -197,8 +210,12 @@ class Cache:
 
                 elif (
                     mask & inotify.constants.IN_DELETE
-                ) == inotify.constants.IN_DELETE or (mask & inotify.constants.IN_MOVED_FROM) == inotify.constants.IN_MOVED_FROM:
-                    logger.info(f"Detected deleted file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache")
+                ) == inotify.constants.IN_DELETE or (
+                    mask & inotify.constants.IN_MOVED_FROM
+                ) == inotify.constants.IN_MOVED_FROM:
+                    logger.info(
+                        f"Detected deleted file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache"
+                    )
                     self._delete_by_original_filename(filename)
 
         except KeyboardInterrupt or InterruptedError as e:
@@ -240,9 +257,11 @@ class Cache:
 
         if only_get_filename:
             return expected_filename
-        
+
         if os.path.isfile(expected_filename):
-            self._logger.info(f"CACHE HIT id='{id}' ({width}x{height}) cache_file='{expected_filename}'")
+            self._logger.info(
+                f"CACHE HIT id='{id}' ({width}x{height}) cache_file='{expected_filename}'"
+            )
             return expected_filename
 
         source_filename = os.path.join(
@@ -262,7 +281,9 @@ class Cache:
             height=height,
             crop_square=square,
         )
-        self._logger.info(f"CACHE MISS id='{id}' ({width}x{height}) cache_file='{filename}'")
+        self._logger.info(
+            f"CACHE MISS id='{id}' ({width}x{height}) cache_file='{filename}'"
+        )
 
         return filename
 
@@ -305,13 +326,13 @@ class Cache:
     def get_all_images(self) -> list[CachedImage]:
         select_statement = select(CachedImage)
         return self.__session.scalars(select_statement).all()
-    
+
     def exists_by_original_filename(self, original_filename: str) -> bool:
         select_statement = select(CachedImage).where(
             CachedImage.original_filename.is_(original_filename)
         )
         return self.__session.scalars(select_statement).one_or_none() is not None
-    
+
     def _get_by_original_filename(self, original_filename: str) -> CachedImage:
         select_statement = select(CachedImage).where(
             CachedImage.original_filename.is_(original_filename)
@@ -322,7 +343,9 @@ class Cache:
         """
         Removes all cached images from the DB that are not in the given list
         """
-        delete_statement = delete(CachedImage).where(CachedImage.original_filename.not_in(original_filenames))
+        delete_statement = delete(CachedImage).where(
+            CachedImage.original_filename.not_in(original_filenames)
+        )
         result = self.__session.execute(delete_statement)
         self._commit_and_flush()
         return result.rowcount
