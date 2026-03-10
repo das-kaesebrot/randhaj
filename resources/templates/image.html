@@ -79,5 +79,8 @@
                     }
                 });
             });
+            window.addEventListener("beforeunload", async (event) => {
+                await history.pushState({}, '', '{{ url_for('page_get_image', image_id=image_id) }}');
+            });
         </script>
 {% endblock content %}
