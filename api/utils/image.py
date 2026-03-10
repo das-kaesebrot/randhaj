@@ -12,7 +12,7 @@ from api.utils.filename import FilenameUtils
 MAX_SIZE = Constants.get_max_width()
 FORMAT = Constants.DEFAULT_FORMAT
 EXTENSION = Constants.DEFAULT_EXTENSION
-SAVE_PROPERTIES = { "quality": 95 }
+SAVE_PROPERTIES = {"quality": 95}
 
 
 class ImageProcessor:
@@ -76,7 +76,14 @@ class ImageProcessor:
 
     @classmethod
     def convert_to_unified_format_and_write_to_filesystem(
-        cls, output_path: str, image: Image.Image, force_write: bool = False, filename_prefix: str = None, format: str = FORMAT, format_save_properties: dict = SAVE_PROPERTIES, filename_extension = EXTENSION
+        cls,
+        output_path: str,
+        image: Image.Image,
+        force_write: bool = False,
+        filename_prefix: str = None,
+        format: str = FORMAT,
+        format_save_properties: dict = SAVE_PROPERTIES,
+        filename_extension=EXTENSION,
     ) -> tuple[str, ImageMetadata]:
         """
         Generates a new image from an input image with the following properties:
@@ -105,7 +112,11 @@ class ImageProcessor:
         filename = os.path.join(
             output_path,
             FilenameUtils.get_filename(
-                id=id, width=rgb_image.width, height=rgb_image.height, extension=filename_extension, prefix=filename_prefix
+                id=id,
+                width=rgb_image.width,
+                height=rgb_image.height,
+                extension=filename_extension,
+                prefix=filename_prefix,
             ),
         )
 
@@ -161,7 +172,7 @@ class ImageProcessor:
         image = cls.resize(image, width, height)
         image.format = source.format
 
-        extension = EXTENSION # fall back to EXTENSION constant
+        extension = EXTENSION  # fall back to EXTENSION constant
         if hasattr(source, "filename"):
             original_filename = source.filename
 
@@ -176,7 +187,9 @@ class ImageProcessor:
             ),
         )
 
-        cls.logger.debug(f"Saving image with id='{id}', filename='{filename}' ({width}x{height}), format={image.format}, save_properties={SAVE_PROPERTIES}")
+        cls.logger.debug(
+            f"Saving image with id='{id}', filename='{filename}' ({width}x{height}), format={image.format}, save_properties={SAVE_PROPERTIES}"
+        )
 
         image.save(filename, **SAVE_PROPERTIES)
         return filename
