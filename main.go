@@ -1,14 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/das-kaesebrot/randhaj/config"
 	"github.com/das-kaesebrot/randhaj/database"
 )
 
 func main() {
-	if err := database.Init("sqlite:///"); err != nil {
+	cfg := config.Load()
+
+	dbPath := fmt.Sprintf("sqlite://%s", cfg.CacheDBFile)
+	if err := database.Init(dbPath); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
@@ -16,8 +21,8 @@ func main() {
 		w.Write([]byte("Hello, World!"))
 	})
 
-	log.Println("Server starting on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	log.Printf("Server starting on :%d", cfg.ServerPort)
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.ServerPort), nil); err != nil {
 		log.Fatal(err)
 	}
 }
