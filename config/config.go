@@ -22,7 +22,7 @@ type Config struct {
 	DefaultCardImageID              string
 	LogLevel                        string
 	MaxInitialCacheGeneratorWorkers int
-	ServerPort                      string
+	ServerPort                      uint16
 }
 
 func Load() *Config {
@@ -37,7 +37,7 @@ func Load() *Config {
 		DefaultCardImageID:              getEnv("DEFAULT_CARD_IMAGE", ""),
 		LogLevel:                        getEnv("LOG_LEVEL", "INFO"),
 		MaxInitialCacheGeneratorWorkers: getEnvAsInt("MAX_INITIAL_CACHE_GENERATOR_WORKERS", 4),
-		ServerPort:                      getEnv("PORT", "8080"),
+		ServerPort:                      getEnvAsUint16("PORT", 8080),
 	}
 }
 
@@ -60,6 +60,10 @@ func getEnvAsInt(key string, defaultValue int) int {
 		log.Fatalf("Invalid value for %s: %s (expected int, got %q)", addPrefix(key), err, value)
 	}
 	return intValue
+}
+
+func getEnvAsUint16(key string, defaultValue uint16) uint16 {
+	return uint16(getEnvAsInt(key, int(defaultValue))) // hacky but it hopefully works
 }
 
 func getEnvAsFloat(key string, defaultValue float64) float64 {
