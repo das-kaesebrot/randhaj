@@ -106,15 +106,7 @@ cache = Cache(
     max_initial_cache_generator_workers=max_initial_cache_generator_workers,
     connection_string=f"sqlite:///{cache_db_file}",
 )
-loop: asyncio.AbstractEventLoop
-try:
-    loop = asyncio.get_event_loop()
-    if loop.is_closed():
-        raise RuntimeError("Event loop is closed")
-except RuntimeError:
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-cache_start = loop.create_task(cache.start())
+cache_start = asyncio.create_task(cache.start())
 
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
