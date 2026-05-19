@@ -39,7 +39,7 @@ VIEW_PAGE_SIZE_LIMIT = 50
 ALLOWED_MAX_UPLOAD_FILE_SIZE = 4 * 1024 * 1024
 ALLOWED_UPLOAD_CONTENT_TYPES = ["image/png", "image/jpeg"]
 
-version = os.getenv("APP_VERSION", "local-dev")
+version = os.getenv("APP_VERSION", "0.0.1")
 source_image_dir = os.getenv(f"{ENV_PREFIX}_IMAGE_DIR", "assets/images")
 cache_dir = os.getenv(f"{ENV_PREFIX}_CACHE_DIR", "cache")
 cache_db_file = os.getenv(
