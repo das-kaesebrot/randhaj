@@ -151,7 +151,7 @@ class Cache:
 
     def stop(self):
         self._stop_event.set()
-        if self._inotify_thread.is_alive():
+        if self._inotify_thread and self._inotify_thread.is_alive():
             self._inotify_thread.join(timeout=5)
 
     def _watch_fs_events(self):
