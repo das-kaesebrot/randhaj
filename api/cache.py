@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
-from threading import Thread
+from threading import Event, Thread
 import inotify.adapters
 import inotify.constants
 from PIL import Image
@@ -31,6 +31,8 @@ class Cache:
 
     __enable_inotify: bool
     __max_initial_cache_generator_workers: int
+
+    _stop_event: Event
 
     def __init__(
         self,
@@ -75,6 +77,7 @@ class Cache:
 
         self.__enable_inotify = enable_inotify
         self.__max_initial_cache_generator_workers = max_initial_cache_generator_workers
+        self._stop_event = Event()
 
     async def start(self):
         self._generate_cache(
@@ -146,6 +149,11 @@ class Cache:
         self._inotify_thread = Thread(target=self._watch_fs_events, daemon=True)
         self._inotify_thread.start()
 
+    def stop(self):
+        self._stop_event.set()
+        if self._inotify_thread.is_alive():
+            self._inotify_thread.join(timeout=5)
+
     def _watch_fs_events(self):
         logger = logging.getLogger(f"{__name__}.inotify-thread")
         try:
@@ -160,7 +168,9 @@ class Cache:
             )
             logger.info(f"Added watch for folder '{self._image_dir}'")
 
-            for event in i.event_gen(yield_nones=False):
+            for event in i.event_gen(yield_nones=False, timeout_s=1):
+                if self._stop_event.is_set():
+                    break
                 (event_obj, _, _, filename) = event
                 logger.debug(event)
                 mask = event_obj.mask

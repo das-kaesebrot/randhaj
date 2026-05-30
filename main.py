@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import asynccontextmanager
 import logging
 import os
 import time
@@ -76,6 +77,28 @@ tags_metadata = [
     },
 ]
 
+cache = Cache(
+    image_dir=source_image_dir,
+    cache_dir=cache_dir,
+    max_initial_cache_generator_workers=max_initial_cache_generator_workers,
+    connection_string=f"sqlite:///{cache_db_file}",
+)
+cache_start = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global cache_start
+    cache_start = asyncio.create_task(cache.start())
+    yield
+    cache_start.cancel()
+    try:
+        await cache_start
+    except asyncio.CancelledError:
+        pass
+    finally:
+        cache.stop()
+
+
 app = FastAPI(
     title=site_title,
     version=version,
@@ -84,6 +107,7 @@ app = FastAPI(
         "url": "https://github.com/das-kaesebrot/randhaj/blob/main/LICENSE",
     },
     openapi_tags=tags_metadata,
+    lifespan=lifespan,
 )
 app.mount(
     "/static/dist",
@@ -99,14 +123,6 @@ templates = Jinja2Templates(directory="resources/templates")
 
 api_router = APIRouter(tags=["api"])
 view_router = APIRouter(tags=["view"], default_response_class=HTMLResponse)
-
-cache = Cache(
-    image_dir=source_image_dir,
-    cache_dir=cache_dir,
-    max_initial_cache_generator_workers=max_initial_cache_generator_workers,
-    connection_string=f"sqlite:///{cache_db_file}",
-)
-cache_start = asyncio.create_task(cache.start())
 
 if not default_card_image_id:
     default_card_image_id = cache.get_first_id()
@@ -573,7 +589,7 @@ async def http_exception_handler_with_view_handling(request, exc: HTTPException)
 
 @app.middleware("http")
 async def intercept_requests_on_startup(request: Request, call_next):
-    if not cache_start.done():
+    if cache_start is None or not cache_start.done():
         path = request.scope.get("path")
         if path.startswith("/api/v1"):
             return JSONResponse(
