@@ -119,11 +119,11 @@
         },
         "fastapi-cloud-cli": {
             "hashes": [
-                "sha256:1f136fc651b0b6e2f4a9679e23c56e1c3be3405e74469c14ba6e2d5b87fdc113",
-                "sha256:95f7a79200e3a90a005e068a4d8ede49d4b04accb095ccd4fd47da998fc28c74"
+                "sha256:a2dfc4074c321e63ec88589cc1f90573d4b5bf980ddc44a7033e6f3cd8e96628",
+                "sha256:f97b31c2ad6af3832eb4065870bdca3365b6e827a0ccf6eeb15e477bc1662b13"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==0.18.0"
+            "version": "==0.19.0"
         },
         "fastar": {
             "hashes": [
