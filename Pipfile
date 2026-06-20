@@ -15,7 +15,7 @@ python-multipart = "~=0.0.21"
 
 [dev-packages]
 flake8 = "~=7.3.0"
-pytest = "~=9.0.1"
+pytest = "~=9.1.0"
 
 [requires]
 python_version = "3.12"
