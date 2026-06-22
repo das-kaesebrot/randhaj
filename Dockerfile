@@ -1,4 +1,4 @@
-FROM python:3.14-alpine@sha256:003970a263347645cd23d4f90929ad16ba7ce7d808ee4674ffcc93cb21cc289f AS build
+FROM python:3.14-alpine@sha256:26730869004e2b9c4b9ad09cab8625e81d256d1ce97e72df5520e806b1709f92 AS build
 
 COPY Pipfile .
 COPY Pipfile.lock .
@@ -7,7 +7,7 @@ COPY Pipfile.lock .
 RUN python3 -m pip install pipenv && \
     pipenv requirements > requirements.txt
 
-FROM python:3.14-alpine@sha256:003970a263347645cd23d4f90929ad16ba7ce7d808ee4674ffcc93cb21cc289f AS base
+FROM python:3.14-alpine@sha256:26730869004e2b9c4b9ad09cab8625e81d256d1ce97e72df5520e806b1709f92 AS base
 ENV PYTHONUNBUFFERED=true
 
 ARG APP_ROOT=/usr/local/bin/randhaj
