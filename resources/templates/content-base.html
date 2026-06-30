@@ -44,7 +44,7 @@
 
 {% block body %}
 {% block navbar %}
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg sticky-top">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% if nav_page == "image" %}#{% else %}{{ url_for('page_redirect_rand_image') }}{% endif %}">
       <img src="{{ url_for('static_external', path='/blahaj.svg') }}" alt="randhaj logo made by Merlin" width="60" height="48" class="d-inline-block align-text-center">
