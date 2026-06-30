@@ -1,6 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 import logging
+import hashlib
 import os
 import time
 import traceback
@@ -120,6 +121,10 @@ app.mount(
     name="static_external",
 )
 templates = Jinja2Templates(directory="resources/templates")
+
+with open("resources/static/randhaj.css", "rb") as f:
+    css_hash = hashlib.sha256(f.read()).hexdigest()
+templates.env.globals["css_version"] = css_hash
 
 api_router = APIRouter(tags=["api"])
 view_router = APIRouter(tags=["view"], default_response_class=HTMLResponse)

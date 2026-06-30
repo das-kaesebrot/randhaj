@@ -3,7 +3,7 @@
     {%- block head -%}
     <script src="{{ url_for('static_external', path='/bootstrap/1756173047/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static_external', path='/bootstrap/1756173047/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static_external', path='/randhaj.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static_external', path='/randhaj.css') }}?v={{ css_version }}">
     {#<link rel="stylesheet" href="{{ url_for('static_external', path='/bootstrap-icons/1746831490/bootstrap-icons.min.css') }}">#}
     <link rel="shortcut icon" type="image/svg+xml" href="{{ url_for('static_external', path='/favicon/favicon.svg') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static_external', path='/favicon/apple-touch-icon.png') }}">
