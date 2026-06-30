@@ -3,21 +3,6 @@
 {% block opengraph_title %}Gallery{% endblock opengraph_title %}
 {% block title %}{{ site_title }} | Gallery (Page {{ page_num }} of {{ page_max }}){% endblock title %}
 
-{% block head %}
-    {{ super() }}
-    <style>
-        .gallery-container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 0;
-        }
-
-        .card-gallery:hover {
-            border: var(--bs-border-width) solid rgba(var(--bs-primary-rgb), 1);
-        }
-    </style>
-{% endblock head %}
-
 {% block content %}
         {% block gallery_navigator %}
         <div class="btn-group mt-3 mb-3" role="group">

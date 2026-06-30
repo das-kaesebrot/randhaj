@@ -1,0 +1,73 @@
+@media only screen and (max-width: 768px) {
+    .btn {
+        width: 100%;
+    }
+    .btn-group .btn {
+        width: auto;
+    }
+    #image {
+        max-width: 100%;
+        max-height: 50vh;
+    }
+}
+
+body {
+    background-image:
+        linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+        linear-gradient(45deg, rgba(91, 206, 250, 0.2) 0%, rgba(245, 169, 184, 0.8) 100%),
+        linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
+        var(--bg-url);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+.svg-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.svg-container svg {
+    margin: 0 auto;
+    display: block;
+}
+
+.nav-link svg {
+    vertical-align: -2px;
+}
+
+nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #55CDFC, #F7A8B8, #FFFFFF, #F7A8B8, #55CDFC);
+}
+
+.gallery-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.card-gallery:hover {
+    border: var(--bs-border-width) solid rgba(var(--bs-primary-rgb), 1);
+}
+
+#image-page .btn,
+#image-page .dropdown-toggle {
+    color: rgb(33, 37, 41);
+    border-color: white;
+    background-image: linear-gradient(45deg, rgba(91, 206, 250, 1) 0%, rgba(245, 169, 184, 1) 100%);
+}
+
+#image-page .btn:hover,
+#image-page .dropdown-toggle:hover {
+    color: rgb(33, 37, 41);
+    background-image: linear-gradient(45deg, rgba(91, 206, 250, 1) 0%, rgba(245, 169, 184, 1) 50%);
+    border-color: rgb(33, 37, 41);
+}
