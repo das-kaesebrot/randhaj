@@ -43,12 +43,22 @@
                 display: block;
             }
         }
+
+        nav::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #55CDFC, #F7A8B8, #FFFFFF, #F7A8B8, #55CDFC);
+        }
     </style>
 {% endblock head %}
 
 {% block body %}
 {% block navbar %}
-<nav class="navbar navbar-expand-lg sticky-top">
+<nav class="navbar navbar-expand-lg sticky-top position-relative bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% if nav_page == "image" %}#{% else %}{{ url_for('page_redirect_rand_image') }}{% endif %}">
       <img src="{{ url_for('static_external', path='/blahaj.svg') }}" alt="randhaj logo made by Merlin" width="60" height="48" class="d-inline-block align-text-center">
