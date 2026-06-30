@@ -46,7 +46,10 @@
 {% block navbar %}
 <nav class="navbar navbar-expand-lg">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% if nav_page == "image" %}#{% else %}{{ url_for('page_redirect_rand_image') }}{% endif %}">{{ self.opengraph_site_name() }}</a>
+    <a class="navbar-brand" href="{% if nav_page == "image" %}#{% else %}{{ url_for('page_redirect_rand_image') }}{% endif %}">
+      <img src="{{ url_for('static_external', path='/blahaj.svg') }}" alt="randhaj logo made by Merlin" width="60" height="48" class="d-inline-block align-text-center">
+      {{ site_title }}
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
