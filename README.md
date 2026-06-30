@@ -1,4 +1,8 @@
-# 🦈 randhaj
+<p align="center" width="100%">
+    <img src="resources/static/blahaj.svg" alt="randhaj logo" width="160"/>
+</p>
+
+<h1 align="center">randhaj</h1>
 
 A web service that displays a random image, made primarily to show random pictures of [Blåhaj](https://en.wikipedia.org/wiki/Bl%C3%A5haj) on my website [kaesebrot.eu/blahaj](https://kaesebrot.eu/blahaj) :)
 
@@ -50,6 +54,12 @@ If you'd like to add additional tags in the `<head>` section or `<footer>` secti
 | - | - | - |
 | `<head>` | `head.html` | Inserted before closing `<head>` tag |
 | `<footer>` | `footer.html` | Inserted after opening `<footer>` tag |
+
+## Logo attribution
+
+The logo and favicon used in this project were created by [Merlin](https://github.com/itsjustmerlin), a very talented friend of mine! Thank you so much for the cute logo!
+
+Follow him on Instagram: [@itsjustmerlin](https://www.instagram.com/itsjustmerlin)
 
 ## Open Source License Attribution
 
