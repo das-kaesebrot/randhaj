@@ -3,48 +3,15 @@
 {% block head %}
     {{ super() }}
     <style>
-        @media only screen and (max-width: 768px) {
-            .btn {
-                width:100%;
-            }
-
-            #image {
-                max-width: 100%;
-                max-height: 50vh;
-            }
-        }
-
-        body {
-            background-image:
-            linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
-                linear-gradient(45deg,rgba(91, 206, 250, 0.2) 0%, rgba(245, 169, 184, 0.8) 100%),
-                linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
-                url({{ url_for('api_get_image', image_id=background_image_id).include_query_params(width=background_image_width) }});
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-attachment: fixed;
-        }
-
-        .svg-container {
-            display: flex;
-            align-items: center;
-            height: 100%;
-
-            & svg {
-                margin: 0 auto;
-                display: block;
-            }
+        :root {
+            --bg-url: url({{ url_for('api_get_image', image_id=background_image_id).include_query_params(width=background_image_width) }});
         }
     </style>
 {% endblock head %}
 
 {% block body %}
 {% block navbar %}
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg pb-3 sticky-top position-relative bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% if nav_page == "image" %}#{% else %}{{ url_for('page_redirect_rand_image') }}{% endif %}">
       <img src="{{ url_for('static_external', path='/blahaj.svg') }}" alt="randhaj logo made by Merlin" width="60" height="48" class="d-inline-block align-text-center">
@@ -76,7 +43,7 @@
   </div>
 </nav>
 {% endblock navbar %}
-<div class="container-fluid text-center">
+<div class="container-fluid text-center py-3">
     {% block content %}{% endblock %}
 </div>
 <footer class="footer mt-auto py-3">

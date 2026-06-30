@@ -5,7 +5,7 @@
 
 {% block content %}
         {% block gallery_navigator %}
-        <div class="btn-group mt-3" role="group">
+        <div class="btn-group mt-3 mb-3" role="group">
             <a class="btn{% if page_num <= 1 %} disabled" aria-disabled="true{% endif %}"
                 href="{{ url_for('page_get_gallery').include_query_params(page=page_num-1, page_size=page_size) }}">
                 <div class="svg-container">{%- include 'svg/bi-arrow-left.svg' %}</div>
@@ -43,14 +43,21 @@
             </a>
         </div>
         {% endblock gallery_navigator %}
-        <div class="align-items-center row justify-content-md-center">
-            {% for image_id in image_ids %}
-            <div class="mt-3 col col-auto">
-                <a href="{{ url_for('page_get_image', image_id=image_id) }}">
-                    <img id="image" class="rounded img-fluid" src="{{ url_for('api_get_image', image_id=image_id).include_query_params(width=current_width, square=True) }}" alt="Image {{ image_id }}" />
-                </a>
+        <div class="gallery-container">
+            <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 justify-content-center">
+                {% for image_id in image_ids %}
+                <div class="col">
+                    <div class="card shadow rounded-4 overflow-hidden card-gallery">
+                        <a href="{{ url_for('page_get_image', image_id=image_id) }}">
+                            <img class="card-img-top" src="{{ url_for('api_get_image', image_id=image_id).include_query_params(width=current_width, square=True) }}" alt="Image {{ image_id }}" />
+                        </a>
+                        <div class="card-body text-center py-2">
+                            <code>{{ image_id }}</code>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
         {{ self.gallery_navigator() }}
 {% endblock content %}
