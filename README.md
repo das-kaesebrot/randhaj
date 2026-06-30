@@ -55,6 +55,12 @@ If you'd like to add additional tags in the `<head>` section or `<footer>` secti
 | `<head>` | `head.html` | Inserted before closing `<head>` tag |
 | `<footer>` | `footer.html` | Inserted after opening `<footer>` tag |
 
+## Logo attribution
+
+The logo and favicon used in this project were created by [Merlin](https://github.com/itsjustmerlin), a very talented friend of mine! Thank you so much for the cute logo!
+
+Follow him on Instagram: [@itsjustmerlin](https://www.instagram.com/itsjustmerlin)
+
 ## Open Source License Attribution
 
 This application uses Open Source components. You can find the source code of their open source projects along with license information below. We acknowledge and are grateful to these developers for their contributions to open source.
