@@ -1,4 +1,8 @@
-# 🦈 randhaj
+<p align="center" width="100%">
+    <img src="resources/static/blahaj.svg" alt="randhaj logo" width="160"/>
+</p>
+
+<h1 align="center">randhaj</h1>
 
 A web service that displays a random image, made primarily to show random pictures of [Blåhaj](https://en.wikipedia.org/wiki/Bl%C3%A5haj) on my website [kaesebrot.eu/blahaj](https://kaesebrot.eu/blahaj) :)
 
