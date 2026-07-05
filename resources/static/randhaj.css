@@ -11,16 +11,32 @@
     }
 }
 
+html {
+    min-height: 100%;
+    background: transparent;
+}
+
+html::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: var(--bg-url) center / cover no-repeat fixed;
+    filter: blur(16px) grayscale(1);
+    z-index: -2;
+}
+
+html::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.35)),
+        linear-gradient(180deg, rgba(85, 205, 252, 0.75) 0%, rgba(247, 168, 184, 0.75) 25%, rgba(255, 255, 255, 0.35) 50%, rgba(247, 168, 184, 0.75) 75%, rgba(85, 205, 252, 0.75) 100%);
+    z-index: -1;
+}
+
 body {
-    background-image:
-        linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
-        linear-gradient(45deg, rgba(91, 206, 250, 0.2) 0%, rgba(245, 169, 184, 0.8) 100%),
-        linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
-        var(--bg-url);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-attachment: fixed;
+    background: transparent;
 }
 
 .svg-container {
