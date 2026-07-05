@@ -58,10 +58,25 @@ nav::after {
     border: var(--bs-border-width) solid rgba(var(--bs-primary-rgb), 1);
 }
 
+#image-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#image-page .card {
+    max-width: 1600px;
+}
+
 #image-page .card-img-top {
-    width: 75%;
-    height: 35vw;
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
     object-fit: contain;
+}
+
+#image-page .card-body {
+    width: 100%;
 }
 
 #image-page .btn,

@@ -1,12 +1,12 @@
 {% extends "content-base.html" %}
 
 {% block content %}
-        <div id="image-page" class="align-items-center">
+        <div id="image-page">
             <div class="card shadow rounded-4 overflow-hidden">
                 <a href="{{ url_for('api_get_image', image_id=image_id) }}">
                     <img class="card-img-top" src="{{ url_for('api_get_image', image_id=image_id).include_query_params(width=resolution_data.current_width) }}" alt="Image {{ image_id }}" />
                 </a>
-                <div class="card-body btn-group" role="group">
+                <div class="card-body btn-group w-100" role="group">
                     <div class="btn-group">
                         <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {%- include 'svg/bi-download.svg' %} Download
