@@ -58,6 +58,12 @@ nav::after {
     border: var(--bs-border-width) solid rgba(var(--bs-primary-rgb), 1);
 }
 
+#image-page .card-img-top {
+    width: 75%;
+    height: 35vw;
+    object-fit: contain;
+}
+
 #image-page .btn,
 #image-page .dropdown-toggle {
     color: rgb(33, 37, 41);
