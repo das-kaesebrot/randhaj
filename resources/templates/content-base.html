@@ -46,10 +46,10 @@
 <div class="container-fluid text-center py-3">
     {% block content %}{% endblock %}
 </div>
-<footer class="footer mt-auto py-3">
+<footer class="footer bg-body-tertiary mt-auto py-3 position-relative">
     {% include "custom/footer.html" ignore missing %}
     {% block footer %}
-    <div class="container">
+    <div class="container-fluid">
       <p>🦈🏳️‍🌈 Powered by <a href="https://github.com/das-kaesebrot/randhaj" target="_blank" class="text-reset">randhaj</a> version <code>{{ version }}</code>{% if request_duration %} ({{ request_duration }}){% endif %} &bull; Logo and favicon by <a href="https://github.com/itsjustmerlin" target="_blank" class="text-reset">itsjustmerlin</a></p>
     </div>
     {% endblock footer %}

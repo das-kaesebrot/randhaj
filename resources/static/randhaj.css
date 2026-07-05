@@ -54,14 +54,22 @@ body {
     vertical-align: -2px;
 }
 
-nav::after {
+nav::after,
+footer::before {
     content: '';
     position: absolute;
-    bottom: 0;
     left: 0;
     right: 0;
     height: 4px;
     background: linear-gradient(90deg, #55CDFC, #F7A8B8, #FFFFFF, #F7A8B8, #55CDFC);
+}
+
+nav::after {
+    bottom: 0;
+}
+
+footer::before {
+    top: 0;
 }
 
 .gallery-container {
