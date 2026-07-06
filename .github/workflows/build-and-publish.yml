@@ -70,8 +70,8 @@ jobs:
       - name: Set short git commit ref
         id: vars
         run: |
-          calculated_sha=$(git rev-parse --short ${{ github.sha }})
-          echo "COMMIT_SHORT_SHA=$calculated_sha-${{ github.ref_name }}" >> $GITHUB_ENV
+          refSlug=${{ github.ref_name }}-$(git rev-parse --short ${{ github.sha }})
+          echo "COMMIT_REF_SLUG=$refSlug" >> $GITHUB_ENV
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -85,7 +85,7 @@ jobs:
             type=sha
             type=ref,event=pr
             type=ref,event=branch
-            type=raw,value=${{ env.COMMIT_SHORT_SHA }}
+            type=raw,value=${{ env.COMMIT_REF_SLUG }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7
@@ -96,4 +96,4 @@ jobs:
             ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            APP_VERSION=${{ env.COMMIT_SHORT_SHA }}
+            APP_VERSION=${{ env.COMMIT_REF_SLUG }}
