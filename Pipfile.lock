@@ -66,10 +66,10 @@
         },
         "crawler-user-agents": {
             "hashes": [
-                "sha256:59f9ad25cf1774111a59b77a8e993424495374d709cbcf065064b225d975524c"
+                "sha256:69f3e3261f0e4cc52f010965581c844b9705a436f40f47c8c78d1289b45eae95"
             ],
             "index": "pypi",
-            "version": "==1.59.0"
+            "version": "==1.62.0"
         },
         "detect-installer": {
             "hashes": [
@@ -824,11 +824,11 @@
         },
         "pydantic-settings": {
             "hashes": [
-                "sha256:a20c97b37910b6550d5ea50fbcc2d4187defe58cd57070b73863d069419c9440",
-                "sha256:c19dd64b19097f1de80184f0cc7b0272a13ae6e170cbf240a3e27e381ed14a5f"
+                "sha256:0ba092c291c94baceb5eff768aa0d56400a457585bc0175925a5a5510303da42",
+                "sha256:694b793e84f766ba76a90ebdefc01d0a9a045dab0382bee70393da93712ad117"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==2.14.2"
+            "version": "==2.15.0"
         },
         "pygments": {
             "hashes": [
@@ -1218,11 +1218,11 @@
         },
         "starlette": {
             "hashes": [
-                "sha256:7d078e0fbefae0d2cecfb80a799d6fb84b1c0c6acd4f14ac79d17d0e7ec27f19",
-                "sha256:b7332de6e9375593a29ba9eee1e6ecfeb3eb2043e2e19a13b4b71da73ff35540"
+                "sha256:a86dd39d14bb45f85a3d18525215a9ef0cfd1f192ac793220e72598c90335f0c",
+                "sha256:d4e3ac5e546444960c710297a3c9fc3f7ebae1b7e963f3d36173b49da535be9b"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==1.4.1"
+            "version": "==1.6.0"
         },
         "typer": {
             "hashes": [
