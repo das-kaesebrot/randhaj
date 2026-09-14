@@ -50,11 +50,11 @@
         },
         "build": {
             "hashes": [
-                "sha256:bd2c8afc603e7a2e0ce70e2ea85f0a6d02043bafbd307f5bada0f98669eca5af",
-                "sha256:f7aaf1ebbb79178a02ba248bb524f2176b256017e17e8e4bd4289c7b38cc2bad"
+                "sha256:51cc11666391ab6f092070437ac747002ff46f3e4113a3622177ee6b488bfc53",
+                "sha256:ecd351a4be9d35a9eaaba244a7687143c9c7d4aea6ac964e7e7ddab20cbcf4e7"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==1.6.0"
+            "version": "==1.6.1"
         },
         "certifi": {
             "hashes": [
@@ -127,11 +127,11 @@
         },
         "fastapi-cloud-cli": {
             "hashes": [
-                "sha256:799868535a7a0716bd50bfb42dacc87aac570224e45052406840ff9244cc5841",
-                "sha256:98f6fffc5059c536435eb2ec547add43061a53879a1ac2271001b9e5dca4ba9b"
+                "sha256:5fd64c26228c8ead803461e8b58ae64ffd586e960d97ab1fc848efac2d9539be",
+                "sha256:94029f92f3dc4289b376e1213f0d6cc7c30d4f32de7e47b5effc6dc754ab9ce9"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==0.25.0"
+            "version": "==0.26.0"
         },
         "fastar": {
             "hashes": [
@@ -992,11 +992,11 @@
         },
         "rich-toolkit": {
             "hashes": [
-                "sha256:88f1b225e360e13c53d643ab52efaf59ef7bf4da282614c8ba5afb72bc63ddc2",
-                "sha256:ea37e9d364e7a6a59af9d96c5b18de3f6046f17affa8b4bc07f3bfad7a597ec5"
+                "sha256:0c9e1c414ffb0720be26285d472e263d1e704b71d31a7e13274b9996db4969e1",
+                "sha256:e21fd616db9c0539d3c50f3433fb1173db95c19d3cbf215615e224182fad6c18"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==0.20.4"
+            "version": "==0.20.5"
         },
         "rignore": {
             "hashes": [
@@ -1177,11 +1177,11 @@
         },
         "sentry-sdk": {
             "hashes": [
-                "sha256:6a97895230b04bc35d4d8d2e51e3b9e21902dfb0086ccf1f131a80c15c7b997a",
-                "sha256:775b78871783a0ffd758276ad01b3bb2b1ebcdad8f9d2f0a7723f76b73c99b65"
+                "sha256:2d2556d9a14db548982b914cbed2a2dc07b6e55d941a620752f89a2afccfd78d",
+                "sha256:f9284b417540b0784b994fa021eb6f1e30ae1cce593d83541274d03c93966eff"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.68.1"
+            "version": "==2.69.1"
         },
         "shellingham": {
             "hashes": [
