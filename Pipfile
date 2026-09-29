@@ -14,7 +14,7 @@ sqlalchemy = "~=2.0.43"
 python-multipart = "~=0.0.21"
 
 [dev-packages]
-flake8 = "~=7.3.0"
+flake8 = "~=7.4.0"
 pytest = "~=9.1.0"
 
 [requires]
