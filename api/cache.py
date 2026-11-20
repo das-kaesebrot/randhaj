@@ -226,7 +226,11 @@ class Cache:
                     logger.info(
                         f"Detected deleted file '{filename}' ({inotify.constants.MASK_LOOKUP[mask]}), adjusting cache"
                     )
-                    self._delete_by_original_filename(filename)
+                    try:
+                        self._delete_by_original_filename(filename)
+                    except:
+                        logger.exception(f"Exception while removing associated entry in cache for '{filename}'")
+                        continue
 
         except KeyboardInterrupt or InterruptedError as e:
             logger.info(f"{type(e).__name__} received. Stopping thread.")
