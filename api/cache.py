@@ -168,7 +168,7 @@ class Cache:
             )
             logger.info(f"Added watch for folder '{self._image_dir}'")
 
-            for event in i.event_gen(yield_nones=False, timeout_s=1):
+            for event in i.event_gen(yield_nones=False):
                 if self._stop_event.is_set():
                     break
                 (event_obj, _, _, filename) = event
