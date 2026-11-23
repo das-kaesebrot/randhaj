@@ -252,10 +252,10 @@
         },
         "crawler-user-agents": {
             "hashes": [
-                "sha256:f4c0e1e3dc7854381a67fa8f0177e22c4a9a3c8887d5d15b923dd79a26037fe5"
+                "sha256:11aa98f44a8701f29a8966a1440eb63d26b4ecaaeffe92b51a6acfbcb5f77ec5"
             ],
             "index": "pypi",
-            "version": "==1.69.0"
+            "version": "==1.73.0"
         },
         "detect-installer": {
             "hashes": [
